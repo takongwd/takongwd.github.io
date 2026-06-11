@@ -57,22 +57,38 @@ export const MasonryGrid: React.FC = () => {
   };
 
   return (
-    <section id="portfolio" className="py-24 px-4 bg-gradient-to-b from-[#050505] to-[#0d0d0f] border-t border-dark-border">
+    <section id="portfolio" className="py-16 md:py-24 px-4 bg-gradient-to-b from-[#050505] to-[#0d0d0f] border-t border-dark-border">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs uppercase tracking-[0.4em] text-gold font-medium block mb-3">
+        <div className="text-center mb-8 md:mb-16 animate-fade-in">
+          <span className="hidden sm:block text-xs uppercase tracking-[0.4em] text-gold font-medium mb-3">
             {t.portfolioSubtitle}
           </span>
-          <h2 className="font-serif text-4xl sm:text-5xl font-light text-white tracking-wide">
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-white tracking-wide">
             {t.portfolioTitle}
           </h2>
-          <div className="w-12 h-[1px] bg-gold mx-auto mt-6" />
+          <div className="w-12 h-[1px] bg-gold mx-auto mt-3 md:mt-6" />
         </div>
 
-        {/* Album Selector Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar justify-start md:justify-center gap-2 md:gap-4 mb-10 pb-3 -mx-4 px-4 scroll-smooth">
+        {/* Mobile Album Selector Dropdown (Clean, luxury styled select) */}
+        <div className="block md:hidden px-2 mb-8 animate-fade-in">
+          <select
+            value={selectedAlbumId}
+            onChange={(e) => handleSelectAlbum(e.target.value)}
+            className="w-full bg-[#0d0d0f] border border-gold/30 hover:border-gold focus:border-gold focus:outline-none rounded px-4 py-3.5 text-xs tracking-wider transition-all text-white font-medium text-center"
+          >
+            <option value="all" className="bg-[#0d0d0f] text-left">{t.portfolioAllWork}</option>
+            {albums.map((album) => (
+              <option key={album.id} value={album.id} className="bg-[#0d0d0f] text-left">
+                {album.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Desktop Album Selector Tabs */}
+        <div className="hidden md:flex flex-wrap justify-center gap-2 md:gap-4 mb-10 pb-3 scroll-smooth">
           <button
             onClick={() => handleSelectAlbum('all')}
             className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 shrink-0 ${

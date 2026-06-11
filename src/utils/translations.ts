@@ -146,7 +146,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     heroScroll: 'ເລື່ອນລົງ',
 
     portfolioSubtitle: 'ເລື່ອງລາວທີ່ຄັດສັນມາ',
-    portfolioTitle: 'ອັນລະບັ້ມຜົນງານຂອງພວກເຮົາ',
+    portfolioTitle: 'ອັນລະບັ້ມຜົນງານ',
     portfolioAllWork: 'ຜົນງານທັງໝົດ',
     portfolioNoPhotos: 'ຍັງບໍ່ມີຮູບພາບໃນອັນລະບັ້ມນີ້ເທື່ອ. ອັບໂຫຼດຮູບພາບຈາກໜ້າຜູ້ດູແລ!',
     portfolioViewCaptures: 'ເບິ່ງຮູບພາບ',
