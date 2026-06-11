@@ -154,7 +154,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     pricingSubtitle: 'ຄໍເລັກຊັນການລົງທຶນ',
     pricingTitle: 'ແພັກເກດ ແລະ ລາຄາ',
     pricingPromoHeader: 'ໂປຣໂມຊັນພິເສດໃນຊ່ວງນີ້',
-    pricingInvestment: '/ ການລົງທຶນ',
+    pricingInvestment: '/ ງານ',
     pricingPopular: 'ຍອດນິຍົມທີ່ສຸດ',
     pricingCta: 'ສອບຖາມ & ຈອງວັນ',
 
