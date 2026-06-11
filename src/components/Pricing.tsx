@@ -44,10 +44,10 @@ export const Pricing: React.FC = () => {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex justify-center gap-4 mb-12">
+        <div className="flex justify-center gap-2 sm:gap-4 mb-12 px-4">
           <button
             onClick={() => setActiveCategory('main')}
-            className={`px-6 py-3 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 cursor-pointer ${
+            className={`px-3.5 py-3 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-widest rounded transition-all duration-300 cursor-pointer w-[48%] sm:w-auto text-center shrink-0 ${
               activeCategory === 'main'
                 ? 'bg-gold text-black shadow-lg shadow-gold/15 font-bold'
                 : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
@@ -57,7 +57,7 @@ export const Pricing: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveCategory('addon')}
-            className={`px-6 py-3 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 cursor-pointer ${
+            className={`px-3.5 py-3 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-widest rounded transition-all duration-300 cursor-pointer w-[48%] sm:w-auto text-center shrink-0 ${
               activeCategory === 'addon'
                 ? 'bg-gold text-black shadow-lg shadow-gold/15 font-bold'
                 : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'

@@ -72,10 +72,10 @@ export const MasonryGrid: React.FC = () => {
         </div>
 
         {/* Album Selector Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-10">
+        <div className="flex overflow-x-auto no-scrollbar justify-start md:justify-center gap-2 md:gap-4 mb-10 pb-3 -mx-4 px-4 scroll-smooth">
           <button
             onClick={() => handleSelectAlbum('all')}
-            className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 ${
+            className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 shrink-0 ${
               selectedAlbumId === 'all'
                 ? 'bg-gold text-black shadow-lg shadow-gold/15'
                 : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
@@ -88,7 +88,7 @@ export const MasonryGrid: React.FC = () => {
             <button
               key={album.id}
               onClick={() => handleSelectAlbum(album.id)}
-              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 ${
+              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 shrink-0 ${
                 selectedAlbumId === album.id
                   ? 'bg-gold text-black shadow-lg shadow-gold/15'
                   : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
@@ -111,7 +111,7 @@ export const MasonryGrid: React.FC = () => {
         {/* Photos Grid - Left-to-right Grid Layout */}
         {filteredPhotos.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 items-start">
               {filteredPhotos.map((photo, index) => (
                 <div
                   key={photo.id}

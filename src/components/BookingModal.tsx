@@ -59,10 +59,10 @@ export const BookingModal: React.FC = () => {
   const firstDayIndex = new Date(year, month, 1).getDay();
   const totalDays = new Date(year, month + 1, 0).getDate();
 
-  // Bilingual calendar labels
+  // Bilingual calendar labels - short abbreviations to prevent text wrapping on mobile
   const weekdays = language === 'en' 
     ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    : ['ອາທິດ', 'ຈັນ', 'ອັງຄານ', 'ພຸດ', 'ພະຫັດ', 'ສຸກ', 'ເສົາ'];
+    : ['ອາ.', 'ຈ.', 'ອ.', 'ພ.', 'ພຫ.', 'ສ.', 'ສ.'];
 
   const monthNames = language === 'en'
     ? [
@@ -251,7 +251,7 @@ export const BookingModal: React.FC = () => {
     const isPast = targetDate < today;
     const isSelected = selectedDate === dateStr;
 
-    let dayClass = 'p-3 text-center text-xs font-semibold rounded-lg cursor-pointer transition-all duration-200 ';
+    let dayClass = 'py-2.5 px-1 sm:p-3 text-center text-xs font-semibold rounded-lg cursor-pointer transition-all duration-200 ';
     if (isPast) {
       dayClass += 'text-white/20 cursor-not-allowed';
     } else if (booked) {
@@ -295,7 +295,7 @@ export const BookingModal: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Calendar Area */}
-          <div className="lg:col-span-7 glass-effect p-6 sm:p-8 rounded-lg shadow-2xl">
+          <div className="lg:col-span-7 glass-effect p-4 sm:p-8 rounded-lg shadow-2xl">
             <div className="flex items-center justify-between mb-8">
               <h3 className="font-serif text-xl text-white font-medium tracking-wider">
                 {monthNames[month]} {year}
@@ -317,16 +317,16 @@ export const BookingModal: React.FC = () => {
             </div>
 
             {/* Days Header */}
-            <div className="grid grid-cols-7 gap-2 text-center mb-4">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center mb-4">
               {weekdays.map(d => (
-                <span key={d} className="text-[10px] uppercase font-bold tracking-widest text-gold opacity-80">
+                <span key={d} className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider sm:tracking-widest text-gold opacity-80">
                   {d}
                 </span>
               ))}
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {calendarDays}
             </div>
 
