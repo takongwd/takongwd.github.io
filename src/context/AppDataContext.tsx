@@ -542,23 +542,37 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, []);
 
-  // Load Initial Data
+  // Load Initial Data & Auth Subscription
   useEffect(() => {
     if (isSupabaseMode) {
-      loadSupabaseData();
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const loggedIn = !!session;
+        setIsAdminAuthenticated(loggedIn);
+        localStorage.setItem('wedding_admin_auth', loggedIn ? 'true' : 'false');
+        
+        // Load data on initialization or auth change
+        await loadSupabaseData(loggedIn);
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
     } else {
       loadLocalData();
-    }
-    
-    // Check local storage for admin auth state
-    const auth = localStorage.getItem('wedding_admin_auth');
-    if (auth === 'true') {
-      setIsAdminAuthenticated(true);
+      // Check local storage for admin auth state
+      const auth = localStorage.getItem('wedding_admin_auth');
+      if (auth === 'true') {
+        setIsAdminAuthenticated(true);
+      }
     }
   }, [isSupabaseMode]);
 
-  const loadSupabaseData = async () => {
+  const loadSupabaseData = async (isAuthenticatedAdmin?: boolean) => {
     try {
+      const loggedIn = isAuthenticatedAdmin !== undefined
+        ? isAuthenticatedAdmin
+        : !!(await supabase.auth.getSession()).data.session;
+
       // 1. Fetch Albums
       const { data: dbAlbums, error: albumsError } = await supabase
         .from('albums')
@@ -648,10 +662,11 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       setPricingPackages(loadedPackages);
 
-      // 4. Fetch Bookings
+      // 4. Fetch Bookings (conditional fields selection based on role)
+      const selectFields = loggedIn ? '*' : 'id, booking_date, status';
       const { data: dbBookings, error: bookingsError } = await supabase
         .from('bookings')
-        .select('*')
+        .select(selectFields)
         .order('booking_date', { ascending: true });
 
       if (bookingsError) throw bookingsError;
@@ -1160,16 +1175,44 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Admin Auth Actions
   const adminLogin = async (password: string) => {
-    // Mock Admin password checking. Default is 'admin123'
-    if (password === 'admin123') {
-      setIsAdminAuthenticated(true);
-      localStorage.setItem('wedding_admin_auth', 'true');
-      return true;
+    if (isSupabaseMode) {
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: 'admin@takongwedding.com',
+          password: password
+        });
+        
+        if (error) {
+          console.error('Supabase Auth error:', error);
+          return false;
+        }
+        
+        setIsAdminAuthenticated(true);
+        localStorage.setItem('wedding_admin_auth', 'true');
+        return true;
+      } catch (err) {
+        console.error('Supabase Auth exception:', err);
+        return false;
+      }
+    } else {
+      // Mock Admin password checking. Default is 'admin123'
+      if (password === 'admin123') {
+        setIsAdminAuthenticated(true);
+        localStorage.setItem('wedding_admin_auth', 'true');
+        return true;
+      }
+      return false;
     }
-    return false;
   };
 
-  const adminLogout = () => {
+  const adminLogout = async () => {
+    if (isSupabaseMode) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error('Supabase SignOut exception:', err);
+      }
+    }
     setIsAdminAuthenticated(false);
     localStorage.removeItem('wedding_admin_auth');
   };
