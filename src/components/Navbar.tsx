@@ -23,9 +23,9 @@ export const Navbar: React.FC<NavbarProps> = ({ isAdmin = false, onLogout }) => 
   const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
 
   const navLinks = [
-    { label: t.navPortfolio, href: '#portfolio' },
-    { label: t.navPackages, href: '#pricing' },
-    { label: t.navCheckDates, href: '#booking' },
+    { label: t.navPortfolio, to: '/', hash: '#portfolio' },
+    { label: t.navPackages, to: '/', hash: '#pricing' },
+    { label: t.navCheckDates, to: '/booking', hash: '' },
   ];
 
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -68,15 +68,31 @@ export const Navbar: React.FC<NavbarProps> = ({ isAdmin = false, onLogout }) => 
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-10">
-            {isHome && navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-xs tracking-widest uppercase text-dark-text-muted hover:text-white transition-colors duration-300 font-medium"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              if (link.hash) {
+                return (
+                  <a
+                    key={link.label}
+                    href={isHome ? link.hash : `${link.to}${link.hash}`}
+                    className="text-xs tracking-widest uppercase text-dark-text-muted hover:text-white transition-colors duration-300 font-medium"
+                  >
+                    {link.label}
+                  </a>
+                );
+              } else {
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    className={`text-xs tracking-widest uppercase transition-colors duration-300 font-medium ${
+                      location.pathname === link.to ? 'text-gold font-semibold' : 'text-dark-text-muted hover:text-white'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+            })}
             
             {isAdmin ? (
               <button
@@ -133,16 +149,33 @@ export const Navbar: React.FC<NavbarProps> = ({ isAdmin = false, onLogout }) => 
       {isOpen && (
         <div className="md:hidden glass-effect border-t border-dark-border py-4 px-6 animate-fade-in">
           <div className="flex flex-col space-y-4">
-            {isHome && navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="text-sm tracking-wider uppercase text-dark-text-muted hover:text-white py-2"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              if (link.hash) {
+                return (
+                  <a
+                    key={link.label}
+                    href={isHome ? link.hash : `${link.to}${link.hash}`}
+                    onClick={() => setIsOpen(false)}
+                    className="text-sm tracking-wider uppercase text-dark-text-muted hover:text-white py-2"
+                  >
+                    {link.label}
+                  </a>
+                );
+              } else {
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    onClick={() => setIsOpen(false)}
+                    className={`text-sm tracking-wider uppercase py-2 transition-colors ${
+                      location.pathname === link.to ? 'text-gold font-semibold' : 'text-dark-text-muted hover:text-white'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+            })}
             
             {isAdmin ? (
               <button

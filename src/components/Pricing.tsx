@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppData } from '../context/AppDataContext';
 import { Check, Flame, Percent } from 'lucide-react';
 import { translations } from '../utils/translations';
@@ -158,8 +159,8 @@ export const Pricing: React.FC = () => {
               </div>
 
               {/* Action Button */}
-              <a
-                href="#booking"
+              <Link
+                to={`/booking?package=${pkg.id}`}
                 className={`w-full py-4 text-center text-xs font-bold uppercase tracking-[0.2em] rounded transition-all duration-300 ${
                   pkg.isPopular
                     ? 'bg-gold-gradient text-black hover:scale-102 shadow-lg shadow-gold/15'
@@ -167,7 +168,7 @@ export const Pricing: React.FC = () => {
                 }`}
               >
                 {t.pricingCta}
-              </a>
+              </Link>
             </div>
           ))}
         </div>

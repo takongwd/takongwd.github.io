@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import { translations } from '../utils/translations';
@@ -34,12 +34,12 @@ export const Hero: React.FC = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-          <a
-            href="#booking"
+          <Link
+            to="/booking"
             className="px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] bg-gold-gradient text-black hover:scale-105 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 rounded"
           >
             {t.heroCtaAvailability}
-          </a>
+          </Link>
           <a
             href="#portfolio"
             className="px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] border border-white/20 hover:border-gold hover:text-gold hover:bg-gold/5 transition-all duration-300 rounded"

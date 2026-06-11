@@ -1,41 +1,74 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
-import { Hero } from '../components/Hero';
-import { MasonryGrid } from '../components/MasonryGrid';
-import { Pricing } from '../components/Pricing';
+import { BookingModal } from '../components/BookingModal';
 import { FloatingContact } from '../components/FloatingContact';
-import { Camera, MapPin, Mail, Phone } from 'lucide-react';
+import { Camera, MapPin, Mail, Phone, ChevronDown } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import { useTransparentLogo } from '../hooks/useTransparentLogo';
 import { translations } from '../utils/translations';
 
-export const Home: React.FC = () => {
+export const BookingPage: React.FC = () => {
   const { settings, language } = useAppData();
   const t = translations[language];
-  
-  // Custom transparent logo: color matches our luxury gold (#c5a880)
   const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
 
-  React.useEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const handleScrollToForm = () => {
+    const formElement = document.getElementById('booking');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-dark-bg text-[#f5f5f7] flex flex-col">
-      {/* Header Navigation */}
+      {/* Sticky Navigation Bar */}
       <Navbar />
 
-      {/* Main Sections */}
-      <main className="flex-grow pt-24">
-        <Hero />
-        <MasonryGrid />
-        <Pricing />
+      {/* Booking Page Hero */}
+      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden">
+        {/* Background image with vignette */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+          style={{ 
+            backgroundImage: `url('${settings.heroBackgroundUrl || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000'}')`,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent to-[#050505]/95" />
+
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center select-none">
+          <span className={`text-xs sm:text-sm tracking-[0.4em] uppercase text-gold font-medium mb-3 block animate-fade-in ${language === 'lo' ? 'font-handwriting tracking-[0.2em]' : ''}`}>
+            {language === 'lo' ? 'ຈອງຄິວງານຖ່າຍຮູບຂອງທ່ານ' : 'RESERVE YOUR SHOOTING DATE'}
+          </span>
+          <h1 className={`text-3xl sm:text-5xl md:text-6xl font-light text-white tracking-wide leading-tight mb-6 animate-fade-in ${language === 'lo' ? 'font-handwriting' : 'font-serif'}`}>
+            {language === 'lo' ? 'ຈອງຄິວ ແລະ ກວດເບິ່ງວັນຫວ່າງ' : 'Book a Shoot & Check Dates'}
+          </h1>
+          <p className="max-w-xl mx-auto text-xs sm:text-sm font-light text-dark-text-muted tracking-widest leading-relaxed mb-8">
+            {language === 'lo' 
+              ? 'ກວດເບິ່ງວັນຫວ່າງຂອງສະຕູດີໂອຜ່ານປະຕິທິນ ແລະ ປ້ອນຂໍ້ມູນຕິດຕໍ່ເພື່ອຈອງຄິວງານຖ່າຍຮູບຂອງທ່ານໄດ້ທັນທີ.'
+              : 'Check our live availability calendar below and fill out your reservation details to secure your shoot date.'}
+          </p>
+
+          <button
+            onClick={handleScrollToForm}
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] bg-gold-gradient text-black hover:scale-105 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 rounded cursor-pointer"
+          >
+            <span>{language === 'lo' ? 'ເລື່ອນລົງເພື່ອຈອງວັນ' : 'Scroll to Calendar'}</span>
+            <ChevronDown className="h-4 w-4 animate-bounce" />
+          </button>
+        </div>
+      </section>
+
+      {/* Main Booking Form (ID represents 'booking' which smooth scrolls here) */}
+      <main className="flex-grow">
+        <BookingModal />
       </main>
 
-      {/* Floating Action Buttons */}
+      {/* Floating Buttons */}
       <FloatingContact />
 
       {/* Luxury Footer */}
