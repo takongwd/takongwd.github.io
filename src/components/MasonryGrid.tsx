@@ -122,7 +122,7 @@ export const MasonryGrid: React.FC = () => {
                     src={photo.url}
                     alt="Wedding celebration"
                     loading="lazy"
-                    className="w-full h-auto block grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
+                    className="w-full h-auto block group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
                   />
                   
                   {/* Transparent protective shield overlay */}
@@ -220,7 +220,17 @@ export const MasonryGrid: React.FC = () => {
 
           {/* Lightbox Info Footer */}
           <div className="mt-4 text-center">
-            <span className="text-xs tracking-[0.2em] uppercase text-gold font-semibold">
+            <span 
+              onClick={() => {
+                const albumId = filteredPhotos[lightboxIndex].albumId;
+                handleSelectAlbum(albumId);
+                closeLightbox();
+                setTimeout(() => {
+                  document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="text-xs tracking-[0.2em] uppercase text-gold hover:text-white hover:underline cursor-pointer transition-colors font-semibold"
+            >
               {albums.find(a => a.id === filteredPhotos[lightboxIndex].albumId)?.title || 'Wedding Portfolio'}
             </span>
             <p className="text-[10px] text-dark-text-muted uppercase tracking-widest mt-1">
