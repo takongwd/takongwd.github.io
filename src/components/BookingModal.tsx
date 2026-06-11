@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppData } from '../context/AppDataContext';
 import type { Booking } from '../context/AppDataContext';
 import { Calendar as CalendarIcon, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -7,6 +8,7 @@ import { translations } from '../utils/translations';
 export const BookingModal: React.FC = () => {
   const { bookings, addBooking, settings, language, pricingPackages } = useAppData();
   const t = translations[language];
+  const [searchParams] = useSearchParams();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -36,6 +38,13 @@ export const BookingModal: React.FC = () => {
   React.useEffect(() => {
     generateCaptcha();
   }, [selectedDate, generateCaptcha]);
+
+  React.useEffect(() => {
+    const pkgId = searchParams.get('package');
+    if (pkgId) {
+      setSelectedPackageId(pkgId);
+    }
+  }, [searchParams]);
 
   const getOriginalPrice = (priceStr: string): string => {
     const digits = priceStr.replace(/[^0-9]/g, '');
@@ -399,22 +408,36 @@ export const BookingModal: React.FC = () => {
                   </div>
                 </div>
 
-                {/* WhatsApp Confirm Button */}
-                <a
-                  href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                    language === 'en'
-                      ? `Hi! I have booked a shoot on the Takong Wedding website.\n\n👤 Name: ${bookingSuccess.clientName}\n📅 Booking Date: ${bookingSuccess.bookingDate}\n📦 Selected Package: ${bookingSuccess.packageName || 'Custom Package'}${bookingSuccess.customDetails ? `\n📝 Details: ${bookingSuccess.customDetails}` : ''}${bookingSuccess.customBudget ? `\n💰 Budget: ${bookingSuccess.customBudget}` : ''}\n📞 Phone: ${bookingSuccess.clientPhone}\n\nPlease confirm my booking. Thank you!`
-                      : `ສະບາຍດີ! ຂ້ອຍໄດ້ກົດຈອງຄິວງານຜ່ານເວັບໄຊ້ Takong Wedding ແລ້ວ.\n\n👤 ຊື່ລູກຄ້າ: ${bookingSuccess.clientName}\n📅 ວັນທີຈອງ: ${bookingSuccess.bookingDate}\n📦 ແພັກເກດທີ່ເລືອກ: ${bookingSuccess.packageName || 'ແພັກເກດກຳນົດເອງ'}${bookingSuccess.customDetails ? `\n📝 ລາຍລະອຽດ: ${bookingSuccess.customDetails}` : ''}${bookingSuccess.customBudget ? `\n💰 ງົບປະມານ: ${bookingSuccess.customBudget}` : ''}\n📞 ເບີໂທ: ${bookingSuccess.clientPhone}\n\nກະລຸນາກວດສອບ ແລະ ຢືນຢັນຄິວໃຫ້ແນ່. ຂອບໃຈ!`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3 w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-widest text-sm rounded shadow-lg shadow-emerald-600/20 hover:scale-102 transition-all duration-300 cursor-pointer"
-                >
-                  <svg className="h-5 w-5 fill-current shrink-0" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.601 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                  </svg>
-                  <span>{language === 'en' ? 'Confirm booking via WhatsApp' : 'ກົດຕິດຕໍ່ແອັດມິນທາງ WhatsApp'}</span>
-                </a>
+                {/* WhatsApp & Facebook Page Confirmation Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                      language === 'en'
+                        ? `Hi! I have booked a shoot on the Takong Wedding website.\n\n👤 Name: ${bookingSuccess.clientName}\n📅 Booking Date: ${bookingSuccess.bookingDate}\n📦 Selected Package: ${bookingSuccess.packageName || 'Custom Package'}${bookingSuccess.customDetails ? `\n📝 Details: ${bookingSuccess.customDetails}` : ''}${bookingSuccess.customBudget ? `\n💰 Budget: ${bookingSuccess.customBudget}` : ''}\n📞 Phone: ${bookingSuccess.clientPhone}\n\nPlease confirm my booking. Thank you!`
+                        : `ສະບາຍດີ! ຂ້ອຍໄດ້ກົດຈອງວັນຖ່າຍຮູບຜ່ານເວັບໄຊ້ Takong Wedding ແລ້ວ.\n\n👤 ຊື່ລູກຄ້າ: ${bookingSuccess.clientName}\n📅 ວັນທີຈອງ: ${bookingSuccess.bookingDate}\n📦 ແພັກເກດທີ່ເລືອກ: ${bookingSuccess.packageName || 'ແພັກເກດກຳນົດເອງ'}${bookingSuccess.customDetails ? `\n📝 ລາຍລະອຽດ: ${bookingSuccess.customDetails}` : ''}${bookingSuccess.customBudget ? `\n💰 ງົບປະມານ: ${bookingSuccess.customBudget}` : ''}\n📞 ເບີໂທ: ${bookingSuccess.clientPhone}\n\nກະລຸນາກວດສອບ ແລະ ຢືນຢັນຄິວໃຫ້ແນ່. ຂອບໃຈ!`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-widest text-xs sm:text-sm rounded shadow-lg shadow-emerald-600/20 hover:scale-102 transition-all duration-300 cursor-pointer"
+                  >
+                    <svg className="h-5 w-5 fill-current shrink-0" viewBox="0 0 16 16">
+                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.601 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                    </svg>
+                    <span>{language === 'en' ? 'Confirm WhatsApp' : 'ຢືນຢັນ WhatsApp'}</span>
+                  </a>
+                  
+                  <a
+                    href={settings.facebookPageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 flex-1 py-4 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold uppercase tracking-widest text-xs sm:text-sm rounded shadow-lg shadow-blue-600/20 hover:scale-102 transition-all duration-300 cursor-pointer"
+                  >
+                    <svg className="h-5 w-5 fill-current shrink-0" viewBox="0 0 24 24">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                    </svg>
+                    <span>{language === 'en' ? 'Visit Facebook' : 'ເບິ່ງ Facebook'}</span>
+                  </a>
+                </div>
 
                 {/* Reset button to let them book again */}
                 <button
@@ -638,26 +661,42 @@ export const BookingModal: React.FC = () => {
                     {isSubmitting ? t.bookingProcessing : t.bookingSubmit}
                   </button>
 
-                  {/* WhatsApp contact to ask more details from Admin */}
+                  {/* Social Inquiry Buttons (WhatsApp & Facebook Page) */}
                   <div className="text-center mt-7 pt-6 border-t border-dark-border/40">
                     <span className="text-xs uppercase tracking-widest text-dark-text-muted block mb-3.5 font-bold">
-                      {language === 'en' ? 'Have questions? Ask our team' : 'ຫຼື ຕ້ອງການສອບຖາມຂໍ້ມູນເພີ່ມເຕີມ?'}
+                      {language === 'en' ? 'Have questions? Contact our team' : 'ຫຼື ຕ້ອງການສອບຖາມຂໍ້ມູນເພີ່ມເຕີມ?'}
                     </span>
-                    <a
-                      href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                        language === 'en' 
-                          ? `Hi! I would like to inquire about booking a shooting date on the Takong Wedding website.`
-                          : `ສະບາຍດີ! ຂ້ອຍຢາກສອບຖາມຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການຈອງຄິວງານຖ່າຍຮູບ.`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-widest border border-gold/30 text-gold hover:bg-gold/5 transition-all duration-300 rounded w-full cursor-pointer"
-                    >
-                      <svg className="h-4 w-4 fill-current shrink-0" viewBox="0 0 24 24">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.665.988 3.3 1.485 5.353 1.486 5.517 0 10.005-4.487 10.008-10.006.002-2.673-1.03-5.188-2.906-7.067C17.229 1.688 14.72 1.655 12.01 1.655c-5.522 0-10.01 4.488-10.013 10.01 0 2.136.565 4.218 1.639 6.058L2.6 21.066l3.86-1.013-.003-.003z" />
-                      </svg>
-                      {language === 'en' ? 'Inquire via WhatsApp' : 'ຕິດຕໍ່ສອບຖາມເພີ່ມເຕີມ ຫາແອັດມິນ'}
-                    </a>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {/* WhatsApp Button */}
+                      <a
+                        href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                          language === 'en' 
+                            ? `Hi! I would like to inquire about booking a shooting date on the Takong Wedding website.`
+                            : `ສະບາຍດີ! ຂ້ອຍຢາກສອບຖາມຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການຈອງວັນຖ່າຍຮູບ.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2.5 px-4 py-3.5 text-xs font-bold uppercase tracking-widest border border-gold/30 text-gold hover:bg-gold/5 transition-all duration-300 rounded cursor-pointer"
+                      >
+                        <svg className="h-4 w-4 fill-current shrink-0" viewBox="0 0 16 16">
+                          <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.601 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                        </svg>
+                        <span>WhatsApp</span>
+                      </a>
+
+                      {/* Facebook Button */}
+                      <a
+                        href={settings.facebookPageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2.5 px-4 py-3.5 text-xs font-bold uppercase tracking-widest border border-gold/30 text-gold hover:bg-gold/5 transition-all duration-300 rounded cursor-pointer"
+                      >
+                        <svg className="h-4 w-4 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                        <span>Facebook Page</span>
+                      </a>
+                    </div>
                   </div>
                 </form>
               </div>

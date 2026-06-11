@@ -35,7 +35,7 @@ export const FloatingContact: React.FC = () => {
         
         {/* Hover label */}
         <span className="absolute right-16 scale-0 group-hover:scale-100 origin-right transition-all duration-200 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gold bg-[#0d0d0f] border border-gold/20 rounded shadow-lg whitespace-nowrap">
-          {language === 'lo' ? 'ຈອງຄິວງານ' : 'Book Shoot'}
+          {language === 'lo' ? 'ຈອງວັນຖ່າຍຮູບ' : 'Book Shoot'}
         </span>
       </Link>
 

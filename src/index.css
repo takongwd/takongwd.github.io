@@ -67,6 +67,11 @@
   /* Universal selector override to force Phetsarath on all elements in Lao mode */
   html[lang="lo"] body,
   html[lang="lo"] *,
+  html[lang="lo"] select,
+  html[lang="lo"] option,
+  html[lang="lo"] input,
+  html[lang="lo"] textarea,
+  html[lang="lo"] button,
   html[lang="lo"] .font-serif,
   html[lang="lo"] .font-sans {
     font-family: "Phetsarath", sans-serif !important;

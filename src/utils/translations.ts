@@ -132,7 +132,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
   lo: {
     navPortfolio: 'ອັນລະບັ້ມຜົນງານ',
     navPackages: 'ແພັກເກດລາຄາ',
-    navCheckDates: 'ຈອງຄິວງານ',
+    navCheckDates: 'ຈອງວັນຖ່າຍຮູບ',
     navAdminPanel: 'ລະບົບຜູ້ດູແລ',
     navViewSite: 'ເບິ່ງໜ້າເວັບ',
     navLogout: 'ອອກຈາກລະບົບ',
