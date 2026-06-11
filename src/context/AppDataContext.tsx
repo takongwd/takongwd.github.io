@@ -524,7 +524,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [settings, setSettings] = useState<AppDataContextType['settings']>(DEFAULT_SETTINGS);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
-  const [language, setLanguageState] = useState<'en' | 'lo'>('en');
+  const [language, setLanguageState] = useState<'en' | 'lo'>('lo');
 
   const setLanguage = (lang: 'en' | 'lo') => {
     setLanguageState(lang);
@@ -537,7 +537,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (storedLang === 'en' || storedLang === 'lo') {
       setLanguage(storedLang);
     } else {
-      document.documentElement.setAttribute('lang', 'en');
+      setLanguage('lo');
     }
   }, []);
 
