@@ -238,6 +238,11 @@ export const AdminDashboard: React.FC = () => {
     setPkgFeatures(pkg.features.join('\n'));
     setPkgIsPopular(pkg.isPopular);
     setPkgCategory(pkg.category || 'main');
+
+    // Scroll to the edit form smoothly
+    setTimeout(() => {
+      document.getElementById('package-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   };
 
   const handleMovePackage = async (pkg: PricingPackage, direction: 'up' | 'down') => {
@@ -874,7 +879,14 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* Package CRUD Form */}
-                <div className="p-6 rounded-lg bg-dark-card border border-dark-border">
+                <div 
+                  id="package-form" 
+                  className={`p-6 rounded-lg transition-all duration-500 ${
+                    editingPkgId 
+                      ? 'bg-[#141417] border border-gold/40 shadow-lg shadow-gold/5' 
+                      : 'bg-dark-card border border-dark-border'
+                  }`}
+                >
                   <h3 className="font-serif text-lg text-white font-medium mb-6 tracking-wider">
                     {editingPkgId ? 'Edit Package Tier' : 'Add New Pricing Package'}
                   </h3>
