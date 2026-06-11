@@ -6,14 +6,15 @@ import { Navbar } from '../components/Navbar';
 import { 
   FolderHeart, CalendarRange, Settings, 
   Trash2, Edit2, Upload, Calendar, Clock, Check, X,
-  Award, User, Phone, Mail, Image as ImageIcon
+  Award, User, Phone, Mail, Image as ImageIcon,
+  ChevronUp, ChevronDown
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const { 
     albums, photos, pricingPackages, settings, bookings, isAdminAuthenticated, adminLogout,
     addAlbum, updateAlbum, deleteAlbum, addPhotos, deletePhoto,
-    addPackage, updatePackage, deletePackage, updateSettings,
+    addPackage, updatePackage, deletePackage, reorderPackages, updateSettings,
     updateBookingStatus, deleteBooking
   } = useAppData();
   
@@ -68,6 +69,7 @@ export const AdminDashboard: React.FC = () => {
   const [pkgDesc, setPkgDesc] = useState('');
   const [pkgFeatures, setPkgFeatures] = useState('');
   const [pkgIsPopular, setPkgIsPopular] = useState(false);
+  const [pkgCategory, setPkgCategory] = useState<'main' | 'addon'>('main');
   const [editingPkgId, setEditingPkgId] = useState<string | null>(null);
 
   // Sync settings states on load
@@ -209,6 +211,7 @@ export const AdminDashboard: React.FC = () => {
       description: pkgDesc,
       features: featuresArray,
       isPopular: pkgIsPopular,
+      category: pkgCategory,
       orderIndex: editingPkgId ? pricingPackages.find(p => p.id === editingPkgId)?.orderIndex || 0 : pricingPackages.length
     };
 
@@ -224,6 +227,7 @@ export const AdminDashboard: React.FC = () => {
     setPkgDesc('');
     setPkgFeatures('');
     setPkgIsPopular(false);
+    setPkgCategory('main');
   };
 
   const handleEditPackage = (pkg: PricingPackage) => {
@@ -233,6 +237,28 @@ export const AdminDashboard: React.FC = () => {
     setPkgDesc(pkg.description);
     setPkgFeatures(pkg.features.join('\n'));
     setPkgIsPopular(pkg.isPopular);
+    setPkgCategory(pkg.category || 'main');
+  };
+
+  const handleMovePackage = async (pkg: PricingPackage, direction: 'up' | 'down') => {
+    const sameCategoryPkgs = [...pricingPackages]
+      .filter(p => (p.category || 'main') === (pkg.category || 'main'))
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+    const index = sameCategoryPkgs.findIndex(p => p.id === pkg.id);
+    
+    if (direction === 'up' && index > 0) {
+      const prevPkg = sameCategoryPkgs[index - 1];
+      await reorderPackages([
+        { id: pkg.id, orderIndex: prevPkg.orderIndex },
+        { id: prevPkg.id, orderIndex: pkg.orderIndex }
+      ]);
+    } else if (direction === 'down' && index < sameCategoryPkgs.length - 1) {
+      const nextPkg = sameCategoryPkgs[index + 1];
+      await reorderPackages([
+        { id: pkg.id, orderIndex: nextPkg.orderIndex },
+        { id: nextPkg.id, orderIndex: pkg.orderIndex }
+      ]);
+    }
   };
 
   return (
@@ -853,7 +879,7 @@ export const AdminDashboard: React.FC = () => {
                     {editingPkgId ? 'Edit Package Tier' : 'Add New Pricing Package'}
                   </h3>
                   <form onSubmit={handleSavePackage} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Package Name</label>
                         <input
@@ -875,6 +901,17 @@ export const AdminDashboard: React.FC = () => {
                           placeholder="e.g. $1,290"
                           className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
                         />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Category / ໝວດໝູ່</label>
+                        <select
+                          value={pkgCategory}
+                          onChange={e => setPkgCategory(e.target.value as 'main' | 'addon')}
+                          className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                        >
+                          <option value="main">Wedding Package (ແພັກເກດຖ່າຍຮູບຫຼັກ)</option>
+                          <option value="addon">Photo Booth Add-on (ບໍລິການ Photo Booth ເສີມ)</option>
+                        </select>
                       </div>
                     </div>
                     <div>
@@ -921,6 +958,7 @@ export const AdminDashboard: React.FC = () => {
                             setPkgDesc('');
                             setPkgFeatures('');
                             setPkgIsPopular(false);
+                            setPkgCategory('main');
                           }}
                           className="px-5 py-2.5 text-xs uppercase tracking-widest border border-white/10 hover:border-white/20 text-white rounded cursor-pointer transition-all"
                         >
@@ -938,41 +976,171 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* Package tiers summary */}
-                <div className="space-y-4">
-                  <h3 className="font-serif text-lg text-white font-medium tracking-wider">
-                    Existing Package Tiers
+                <div className="space-y-6">
+                  <h3 className="font-serif text-lg text-white font-medium tracking-wider border-b border-dark-border pb-2">
+                    Existing Package Tiers / ລາຍການແພັກເກດທັງໝົດ
                   </h3>
-                  <div className="space-y-3">
-                    {pricingPackages.map((pkg) => (
-                      <div key={pkg.id} className="p-4 rounded-lg bg-dark-card border border-dark-border flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center space-x-3">
-                            <span className="font-serif text-base text-white font-semibold">{pkg.name}</span>
-                            <span className="text-xs text-gold font-mono">{pkg.price}</span>
-                            {pkg.isPopular && (
-                              <span className="px-2 py-0.5 text-[8px] bg-gold text-black rounded font-bold uppercase tracking-wider">
-                                Popular
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-dark-text-muted mt-1 font-light">{pkg.description}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditPackage(pkg)}
-                            className="p-2 border border-white/10 hover:border-gold/30 text-dark-text-muted hover:text-white rounded transition-all cursor-pointer"
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => deletePackage(pkg.id)}
-                            className="p-2 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:bg-red-500/10 rounded transition-all cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
+                  
+                  <div className="space-y-8">
+                    {/* Category 1: Wedding Packages */}
+                    <div className="space-y-3">
+                      <h4 className="text-xs uppercase tracking-[0.2em] text-gold font-semibold flex items-center justify-between bg-gold/5 px-4 py-2 border border-gold/15 rounded">
+                        <span>Wedding Packages (ແພັກເກດຖ່າຍຮູບຫຼັກ)</span>
+                        <span className="text-[10px] text-dark-text-muted font-mono bg-black/40 px-2 py-0.5 rounded">
+                          {pricingPackages.filter(p => (p.category || 'main') === 'main').length} items
+                        </span>
+                      </h4>
+                      <div className="space-y-3">
+                        {pricingPackages.filter(p => (p.category || 'main') === 'main').map((pkg) => {
+                          const sameCategory = pricingPackages.filter(p => (p.category || 'main') === 'main');
+                          const pkgIndex = sameCategory.findIndex(p => p.id === pkg.id);
+                          const isFirst = pkgIndex === 0;
+                          const isLast = pkgIndex === sameCategory.length - 1;
+
+                          return (
+                            <div key={pkg.id} className="p-4 rounded-lg bg-dark-card border border-dark-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                              <div>
+                                <div className="flex items-center flex-wrap gap-2.5">
+                                  <span className="font-serif text-base text-white font-semibold">{pkg.name}</span>
+                                  <span className="text-xs text-gold font-mono">{pkg.price}</span>
+                                  {pkg.isPopular && (
+                                    <span className="px-2 py-0.5 text-[8px] bg-gold text-black rounded font-bold uppercase tracking-wider">
+                                      Popular
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-dark-text-muted mt-1 font-light">{pkg.description}</p>
+                              </div>
+                              <div className="flex gap-2 items-center self-end sm:self-auto shrink-0">
+                                {/* Order actions */}
+                                <div className="flex gap-1 bg-black/40 border border-dark-border/40 p-0.5 rounded">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePackage(pkg, 'up')}
+                                    disabled={isFirst}
+                                    className="p-1 text-dark-text-muted hover:text-white rounded disabled:opacity-25 hover:bg-gold/10 disabled:hover:bg-transparent transition-all cursor-pointer"
+                                    title="Move Up"
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePackage(pkg, 'down')}
+                                    disabled={isLast}
+                                    className="p-1 text-dark-text-muted hover:text-white rounded disabled:opacity-25 hover:bg-gold/10 disabled:hover:bg-transparent transition-all cursor-pointer"
+                                    title="Move Down"
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </button>
+                                </div>
+
+                                <div className="h-6 w-[1px] bg-dark-border mx-1" />
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditPackage(pkg)}
+                                  className="p-2 border border-white/10 hover:border-gold/30 text-dark-text-muted hover:text-white rounded transition-all cursor-pointer"
+                                >
+                                  <Edit2 className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deletePackage(pkg.id)}
+                                  className="p-2 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:bg-red-500/10 rounded transition-all cursor-pointer"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {pricingPackages.filter(p => (p.category || 'main') === 'main').length === 0 && (
+                          <p className="text-xs text-dark-text-muted italic py-4 text-center border border-dashed border-dark-border/45 rounded">
+                            No packages in this category.
+                          </p>
+                        )}
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Category 2: Photo Booth Add-ons */}
+                    <div className="space-y-3">
+                      <h4 className="text-xs uppercase tracking-[0.2em] text-gold font-semibold flex items-center justify-between bg-gold/5 px-4 py-2 border border-gold/15 rounded">
+                        <span>Photo Booth Add-ons (ບໍລິການ Photo Booth ເສີມ)</span>
+                        <span className="text-[10px] text-dark-text-muted font-mono bg-black/40 px-2 py-0.5 rounded">
+                          {pricingPackages.filter(p => p.category === 'addon').length} items
+                        </span>
+                      </h4>
+                      <div className="space-y-3">
+                        {pricingPackages.filter(p => p.category === 'addon').map((pkg) => {
+                          const sameCategory = pricingPackages.filter(p => p.category === 'addon');
+                          const pkgIndex = sameCategory.findIndex(p => p.id === pkg.id);
+                          const isFirst = pkgIndex === 0;
+                          const isLast = pkgIndex === sameCategory.length - 1;
+
+                          return (
+                            <div key={pkg.id} className="p-4 rounded-lg bg-dark-card border border-dark-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                              <div>
+                                <div className="flex items-center flex-wrap gap-2.5">
+                                  <span className="font-serif text-base text-white font-semibold">{pkg.name}</span>
+                                  <span className="text-xs text-gold font-mono">{pkg.price}</span>
+                                  {pkg.isPopular && (
+                                    <span className="px-2 py-0.5 text-[8px] bg-gold text-black rounded font-bold uppercase tracking-wider">
+                                      Popular
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-dark-text-muted mt-1 font-light">{pkg.description}</p>
+                              </div>
+                              <div className="flex gap-2 items-center self-end sm:self-auto shrink-0">
+                                {/* Order actions */}
+                                <div className="flex gap-1 bg-black/40 border border-dark-border/40 p-0.5 rounded">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePackage(pkg, 'up')}
+                                    disabled={isFirst}
+                                    className="p-1 text-dark-text-muted hover:text-white rounded disabled:opacity-25 hover:bg-gold/10 disabled:hover:bg-transparent transition-all cursor-pointer"
+                                    title="Move Up"
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePackage(pkg, 'down')}
+                                    disabled={isLast}
+                                    className="p-1 text-dark-text-muted hover:text-white rounded disabled:opacity-25 hover:bg-gold/10 disabled:hover:bg-transparent transition-all cursor-pointer"
+                                    title="Move Down"
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </button>
+                                </div>
+
+                                <div className="h-6 w-[1px] bg-dark-border mx-1" />
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditPackage(pkg)}
+                                  className="p-2 border border-white/10 hover:border-gold/30 text-dark-text-muted hover:text-white rounded transition-all cursor-pointer"
+                                >
+                                  <Edit2 className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => deletePackage(pkg.id)}
+                                  className="p-2 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:bg-red-500/10 rounded transition-all cursor-pointer"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {pricingPackages.filter(p => p.category === 'addon').length === 0 && (
+                          <p className="text-xs text-dark-text-muted italic py-4 text-center border border-dashed border-dark-border/45 rounded">
+                            No packages in this category.
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -77,6 +77,7 @@ interface AppDataContextType {
   addPackage: (pkg: Omit<PricingPackage, 'id'>) => Promise<PricingPackage>;
   updatePackage: (id: string, pkg: Partial<PricingPackage>) => Promise<PricingPackage>;
   deletePackage: (id: string) => Promise<void>;
+  reorderPackages: (reorderedPkgs: { id: string; orderIndex: number }[]) => Promise<void>;
   
   // Settings Actions
   updateSettings: (data: Partial<AppDataContextType['settings']>) => Promise<void>;
@@ -1012,6 +1013,28 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     saveLocal('wedding_packages', updated);
   };
 
+  const reorderPackages = async (reorderedPkgs: { id: string; orderIndex: number }[]) => {
+    if (isSupabaseMode) {
+      for (const item of reorderedPkgs) {
+        const { error } = await supabase
+          .from('pricing_packages')
+          .update({ order_index: item.orderIndex })
+          .eq('id', item.id);
+        if (error) throw error;
+      }
+    }
+
+    setPricingPackages(prev => {
+      const updated = prev.map(p => {
+        const match = reorderedPkgs.find(item => item.id === p.id);
+        return match ? { ...p, orderIndex: match.orderIndex } : p;
+      }).sort((a, b) => a.orderIndex - b.orderIndex);
+      
+      saveLocal('wedding_packages', updated);
+      return updated;
+    });
+  };
+
   // Settings CRUD
   const updateSettings = async (data: Partial<AppDataContextType['settings']>) => {
     if (isSupabaseMode) {
@@ -1171,6 +1194,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addPackage,
         updatePackage,
         deletePackage,
+        reorderPackages,
         updateSettings,
         addBooking,
         updateBookingStatus,
