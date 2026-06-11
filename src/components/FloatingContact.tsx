@@ -15,7 +15,7 @@ export const FloatingContact: React.FC = () => {
       {/* Booking Calendar Button */}
       <Link
         to="/booking"
-        className="group relative flex items-center justify-center w-14 h-14 bg-[#121215] border border-gold/30 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-2xl transition-all duration-300 cursor-pointer"
+        className="group relative flex items-center justify-center w-14 h-14 bg-transparent backdrop-blur-sm border border-white/25 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-xl transition-all duration-300 cursor-pointer"
         aria-label="Book a shooting date"
       >
         <svg 
@@ -44,7 +44,7 @@ export const FloatingContact: React.FC = () => {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex items-center justify-center w-14 h-14 bg-[#121215] border border-gold/30 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-2xl transition-all duration-300 cursor-pointer"
+        className="group relative flex items-center justify-center w-14 h-14 bg-transparent backdrop-blur-sm border border-white/25 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-xl transition-all duration-300 cursor-pointer"
         aria-label="Contact on WhatsApp"
       >
         <svg 
@@ -66,7 +66,7 @@ export const FloatingContact: React.FC = () => {
         href={settings.facebookPageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex items-center justify-center w-14 h-14 bg-[#121215] border border-gold/30 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-2xl transition-all duration-300 cursor-pointer"
+        className="group relative flex items-center justify-center w-14 h-14 bg-transparent backdrop-blur-sm border border-white/25 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-xl transition-all duration-300 cursor-pointer"
         aria-label="Visit Facebook Page"
       >
         <svg 

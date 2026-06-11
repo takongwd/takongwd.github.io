@@ -575,13 +575,18 @@ export const BookingModal: React.FC = () => {
                     <label className="block text-xs uppercase tracking-widest text-dark-text-muted font-bold mb-2.5">
                       {language === 'en' ? 'Event Details (Optional)' : 'ລາຍລະອຽດງານ (ເພີ່ມເຕີມ)'}
                     </label>
+                    <p className="text-[10px] text-dark-text-muted mb-2 leading-relaxed">
+                      {language === 'en'
+                        ? 'e.g. Event time · Morning venue (ceremony location / home address) · Evening venue (reception hall / hotel name) · Other special requests'
+                        : 'ຕົວຢ່າງ: ເວລາງານ · ສະຖານທີ່ຕອນເຊົ້າ (ສະຖານທີ່ພິທີ / ທີ່ຢູ່ບ້ານ) · ສະຖານທີ່ຕອນແລງ (ຫ້ອງຮັບແຂກ / ຊື່ໂຮງແຮມ) · ສິ່ງທີ່ຕ້ອງການເພີ່ມເຕີມ'}
+                    </p>
                     <textarea
                       value={customDetails}
                       onChange={e => setCustomDetails(e.target.value)}
-                      rows={3}
+                      rows={4}
                       placeholder={language === 'en'
-                        ? 'Describe your event — type of event, style, special requests...'
-                        : 'ອະທິບາຍລາຍລະອຽດງານ ເຊັ່ນ: ປະເພດງານ, ສໄຕລ໌, ສິ່ງທີ່ຕ້ອງການເພີ່ມເຕີມ...'}
+                        ? 'e.g.\nTime: 08:00 AM ceremony · 18:00 reception\nMorning: Bride\'s home, Ban Phonsavan, Vientiane\nEvening: Lao Plaza Hotel, Vientiane\nOther: Need outdoor shots at sunset...'
+                        : 'ຕົວຢ່າງ:\nເວລາ: ພິທີ 08:00 ເຊົ້າ · ງານລ້ຽງ 18:00 ແລງ\nຕອນເຊົ້າ: ບ້ານເຈົ້າສາວ, ບ້ານໂພນສະຫວັນ, ວຽງຈັນ\nຕອນແລງ: ໂຮງແຮມລາວພລາຊ່າ, ວຽງຈັນ\nອື່ນໆ: ຕ້ອງການຖ່າຍນອກສະຖານທີ່ຕອນທ່ຽງ...'}
                       className="w-full bg-[#050505] border border-dark-border hover:border-gold/30 focus:border-gold focus:outline-none rounded px-4.5 py-3 text-sm tracking-wider transition-all text-white resize-none"
                     />
                   </div>
