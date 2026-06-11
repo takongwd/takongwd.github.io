@@ -69,19 +69,19 @@ export const Pricing: React.FC = () => {
 
         {/* Promotion Banner - Only shown for main packages */}
         {activeCategory === 'main' && settings.promotionText && (
-          <div className="max-w-4xl mx-auto mb-16 animate-fade-in">
-            <div className="relative p-6 sm:p-8 rounded-lg bg-gradient-to-r from-gold/10 via-gold/5 to-transparent border border-gold/30 flex flex-col sm:flex-row items-center gap-6 overflow-hidden">
-              <div className="absolute top-0 right-0 p-1 bg-gold text-black text-[9px] uppercase tracking-widest font-bold rotate-12 translate-x-4 translate-y-2">
+          <div className="max-w-3xl mx-auto mb-10 animate-fade-in">
+            <div className="relative py-4 px-5 sm:py-5 sm:px-8 rounded-lg bg-gradient-to-r from-gold/10 via-gold/5 to-transparent border border-gold/20 flex flex-row items-center gap-4 sm:gap-5 overflow-hidden">
+              <div className="absolute top-0 right-0 py-0.5 px-2 bg-gold text-black text-[8px] uppercase tracking-widest font-bold rotate-12 translate-x-4 translate-y-1 scale-90">
                 Special Offer
               </div>
-              <div className="p-3.5 rounded-full bg-gold/10 border border-gold/30 text-gold flex items-center justify-center shrink-0">
-                <Percent className="h-6 w-6" />
+              <div className="p-2 sm:p-2.5 rounded-full bg-gold/10 border border-gold/30 text-gold flex items-center justify-center shrink-0">
+                <Percent className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <div>
-                <h4 className="font-serif text-lg text-white font-medium mb-1.5 tracking-wider">
+                <h4 className="font-serif text-sm sm:text-base text-white font-medium mb-0.5 tracking-wider">
                   {t.pricingPromoHeader}
                 </h4>
-                <p className="text-xs text-dark-text-muted leading-relaxed">
+                <p className="text-[11px] text-dark-text-muted leading-relaxed">
                   {settings.promotionText}
                 </p>
               </div>
