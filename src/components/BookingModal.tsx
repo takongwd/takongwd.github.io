@@ -135,10 +135,6 @@ export const BookingModal: React.FC = () => {
       return;
     }
     if (selectedPackageId === 'custom') {
-      if (!customDetails.trim()) {
-        setValidationError(language === 'en' ? 'Please describe your event type/custom request.' : 'ກະລຸນາປ້ອນລາຍລະອຽດງານທີ່ຕ້ອງການຖ່າຍ.');
-        return;
-      }
       if (!customBudget.trim()) {
         setValidationError(language === 'en' ? 'Please specify your proposed budget.' : 'ກະລຸນາປ້ອນລາຄາ ຫຼື ງົບປະມານທີ່ສະເໜີ.');
         return;
@@ -221,7 +217,7 @@ export const BookingModal: React.FC = () => {
         packageName: isCustom 
           ? (language === 'en' ? 'Custom Proposed Package' : 'ສະເໜີແພັກເກດເອງ')
           : (chosenPkg ? chosenPkg.name : 'Custom Package'),
-        customDetails: isCustom ? customDetails : undefined,
+        customDetails: customDetails.trim() ? customDetails : undefined,
         customBudget: isCustom ? customBudget : undefined
       });
 
@@ -572,6 +568,22 @@ export const BookingModal: React.FC = () => {
                         </div>
                       );
                     })()}
+                  </div>
+
+                  {/* Event Details — visible for ALL booking types */}
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest text-dark-text-muted font-bold mb-2.5">
+                      {language === 'en' ? 'Event Details (Optional)' : 'ລາຍລະອຽດງານ (ເພີ່ມເຕີມ)'}
+                    </label>
+                    <textarea
+                      value={customDetails}
+                      onChange={e => setCustomDetails(e.target.value)}
+                      rows={3}
+                      placeholder={language === 'en'
+                        ? 'Describe your event — type of event, style, special requests...'
+                        : 'ອະທິບາຍລາຍລະອຽດງານ ເຊັ່ນ: ປະເພດງານ, ສໄຕລ໌, ສິ່ງທີ່ຕ້ອງການເພີ່ມເຕີມ...'}
+                      className="w-full bg-[#050505] border border-dark-border hover:border-gold/30 focus:border-gold focus:outline-none rounded px-4.5 py-3 text-sm tracking-wider transition-all text-white resize-none"
+                    />
                   </div>
 
                   <div>
