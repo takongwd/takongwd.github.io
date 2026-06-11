@@ -57,35 +57,35 @@ export const FloatingContact: React.FC = () => {
         
         {/* Hover label */}
         <span className="absolute right-16 scale-0 group-hover:scale-100 origin-right transition-all duration-200 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gold bg-[#0d0d0f] border border-gold/20 rounded shadow-lg whitespace-nowrap">
-          WhatsApp Chat
+          {language === 'lo' ? 'ສອບຖາມໂດຍກົງ' : 'Direct Inquiry'}
         </span>
       </a>
 
-      {/* Facebook Button - Native SVG to ensure robust rendering */}
-      <a
-        href={settings.facebookPageUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+      {/* Portfolio / Gallery Button */}
+      <Link
+        to="/#portfolio"
         className="group relative flex items-center justify-center w-14 h-14 bg-transparent backdrop-blur-sm border border-white/25 hover:border-gold rounded-full text-gold hover:text-black hover:bg-gold-gradient shadow-xl transition-all duration-300 cursor-pointer"
-        aria-label="Visit Facebook Page"
+        aria-label="View Portfolio"
       >
-        <svg 
-          className="h-6 w-6 transform group-hover:scale-110 transition-transform" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
+        <svg
+          className="h-6 w-6 transform group-hover:scale-110 transition-transform"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
         </svg>
-        
+
         {/* Hover label */}
         <span className="absolute right-16 scale-0 group-hover:scale-100 origin-right transition-all duration-200 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gold bg-[#0d0d0f] border border-gold/20 rounded shadow-lg whitespace-nowrap">
-          Facebook Page
+          {language === 'lo' ? 'ເບິ່ງຜົນງານ' : 'Portfolio'}
         </span>
-      </a>
+      </Link>
     </div>
   );
 };
