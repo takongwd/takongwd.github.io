@@ -147,14 +147,7 @@ export const MasonryGrid: React.FC = () => {
                   {/* Overlay hover effect */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-6 z-20 protect-image">
                     <div>
-                      <span 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectAlbum(photo.albumId);
-                          document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="text-[10px] tracking-widest uppercase text-gold hover:text-white hover:underline cursor-pointer transition-colors relative z-30 font-semibold"
-                      >
+                      <span className="text-[10px] tracking-widest uppercase text-gold/85 font-semibold block">
                         {albums.find(a => a.id === photo.albumId)?.title || 'Wedding Portfolio'}
                       </span>
                       <h4 className="font-serif text-base text-white font-light mt-1">
