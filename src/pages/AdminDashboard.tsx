@@ -28,18 +28,91 @@ export const AdminDashboard: React.FC = () => {
     }
   }, [isAdminAuthenticated, navigate]);
 
-  // Image Upload helper (converts local files to Base64 data urls)
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (base64: string) => void) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          callback(reader.result);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
+
+  // Image Compression helper (reduces files to max 1200px and 0.75 quality)
+  const compressAndReadFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        const MAX_DIM = 1200;
+        if (width > height) {
+          if (width > MAX_DIM) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          }
+        } else {
+          if (height > MAX_DIM) {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
         }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+        URL.revokeObjectURL(img.src);
+        resolve(compressedBase64);
       };
-      reader.readAsDataURL(file);
+      img.onerror = (err) => {
+        URL.revokeObjectURL(img.src);
+        reject(err);
+      };
+    });
+  };
+
+  const handleSingleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    callback: (base64: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadProgress('Compressing and optimizing cover image...');
+    try {
+      const compressed = await compressAndReadFile(file);
+      callback(compressed);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to compress image');
+    } finally {
+      setUploadProgress(null);
     }
+  };
+
+  const handlePhotoFilesSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadProgress(`Processing 0 of ${files.length} images...`);
+    const compressedList: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      try {
+        setUploadProgress(`Compressing and optimizing image ${i + 1} of ${files.length}...`);
+        const compressed = await compressAndReadFile(files[i]);
+        compressedList.push(compressed);
+      } catch (err) {
+        console.error('Error compressing image:', err);
+      }
+    }
+
+    setUploadProgress(null);
+    setPendingPhotos(prev => [...prev, ...compressedList]);
   };
 
   // --- Sub-State for Album CRUD ---
@@ -106,6 +179,7 @@ export const AdminDashboard: React.FC = () => {
     setAlbumTitle('');
     setAlbumDesc('');
     setAlbumCover('');
+    setShowCreateForm(false); // Hide form after saving
   };
 
   const handleEditAlbum = (album: Album) => {
@@ -113,6 +187,10 @@ export const AdminDashboard: React.FC = () => {
     setAlbumTitle(album.title);
     setAlbumDesc(album.description);
     setAlbumCover(album.coverUrl);
+    setShowCreateForm(true); // Expand form when editing
+    setTimeout(() => {
+      document.getElementById('album-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   };
 
   const handleCancelAlbumEdit = () => {
@@ -120,21 +198,34 @@ export const AdminDashboard: React.FC = () => {
     setAlbumTitle('');
     setAlbumDesc('');
     setAlbumCover('');
+    setShowCreateForm(false);
   };
 
   const handleAddPhotos = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedAlbumId || !photoUrlsInput) return;
-    
-    // Split urls by comma or newline
-    const urls = photoUrlsInput
+    if (!selectedAlbumId) return;
+
+    // 1. Gather pasted URLs
+    const urlsFromInput = photoUrlsInput
       .split(/[\n,]/)
       .map(url => url.trim())
       .filter(url => url.length > 0);
 
-    if (urls.length > 0) {
-      await addPhotos(selectedAlbumId, urls);
-      setPhotoUrlsInput('');
+    // 2. Combine with pending uploaded photos
+    const allUrls = [...urlsFromInput, ...pendingPhotos];
+
+    if (allUrls.length > 0) {
+      setUploadProgress(`Saving ${allUrls.length} photos to album...`);
+      try {
+        await addPhotos(selectedAlbumId, allUrls);
+        setPhotoUrlsInput('');
+        setPendingPhotos([]);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to save photos to database');
+      } finally {
+        setUploadProgress(null);
+      }
     }
   };
 
@@ -269,6 +360,15 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-dark-bg text-[#f5f5f7] flex flex-col">
       <Navbar isAdmin={true} onLogout={adminLogout} />
+
+      {uploadProgress && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="p-6 rounded-lg bg-dark-card border border-gold/30 flex flex-col items-center max-w-sm text-center space-y-4 shadow-2xl">
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-gold border-t-transparent"></div>
+            <p className="text-sm font-semibold text-white tracking-wide">{uploadProgress}</p>
+          </div>
+        </div>
+      )}
 
       {/* Main Dashboard Layout */}
       <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
@@ -454,140 +554,220 @@ export const AdminDashboard: React.FC = () => {
             {activeTab === 'albums' && (
               <div className="space-y-10 animate-fade-in">
                 
+                {/* Album Management Form Toggle */}
+                {!editingAlbumId && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => setShowCreateForm(prev => !prev)}
+                      className="px-5 py-3 border border-gold/45 text-gold hover:text-black hover:bg-gold-gradient text-xs font-semibold uppercase tracking-widest rounded hover:scale-102 transition-all cursor-pointer flex items-center space-x-2 shadow-lg shadow-gold/5"
+                    >
+                      <span>{showCreateForm ? '− Hide Create Album Form' : '＋ Create New Portfolio Album'}</span>
+                    </button>
+                  </div>
+                )}
+
                 {/* Album Management Form */}
-                <div className="p-6 rounded-lg bg-dark-card border border-dark-border">
-                  <h3 className="font-serif text-lg text-white font-medium mb-6 tracking-wider">
-                    {editingAlbumId ? 'Edit Album Properties' : 'Create New Portfolio Album'}
-                  </h3>
-                  <form onSubmit={handleSaveAlbum} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Album Title</label>
-                      <input
-                        type="text"
-                        value={albumTitle}
-                        onChange={e => setAlbumTitle(e.target.value)}
-                        required
-                        placeholder="e.g. Traditional Ceremony Vientiane"
-                        className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Cover Photo URL / Base64</label>
-                      <div className="flex gap-2">
+                {(showCreateForm || editingAlbumId) && (
+                  <div id="album-form" className="p-6 rounded-lg bg-dark-card border border-dark-border animate-fade-in">
+                    <h3 className="font-serif text-lg text-white font-medium mb-6 tracking-wider">
+                      {editingAlbumId ? 'Edit Album Properties' : 'Create New Portfolio Album'}
+                    </h3>
+                    <form onSubmit={handleSaveAlbum} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Album Title</label>
                         <input
                           type="text"
-                          value={albumCover}
-                          onChange={e => setAlbumCover(e.target.value)}
-                          placeholder="Image URL or upload file"
-                          className="flex-grow bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                          value={albumTitle}
+                          onChange={e => setAlbumTitle(e.target.value)}
+                          required
+                          placeholder="e.g. Traditional Ceremony Vientiane"
+                          className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
                         />
-                        <label className="p-2.5 bg-[#121215] border border-dark-border hover:border-gold/45 rounded cursor-pointer text-dark-text-muted hover:text-white transition-all">
-                          <Upload className="h-4.5 w-4.5" />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={e => handleFileUpload(e, setAlbumCover)}
-                            className="hidden"
-                          />
-                        </label>
                       </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Short Description / Subtitle</label>
-                      <textarea
-                        value={albumDesc}
-                        onChange={e => setAlbumDesc(e.target.value)}
-                        rows={2}
-                        placeholder="Provide an elegant description for this portfolio collection..."
-                        className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
-                      />
-                    </div>
-                    <div className="sm:col-span-2 flex justify-end space-x-3">
-                      {editingAlbumId && (
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Cover Photo URL / Base64</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={albumCover}
+                            onChange={e => setAlbumCover(e.target.value)}
+                            placeholder="Image URL or upload file"
+                            className="flex-grow bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                          />
+                          <label className="p-2.5 bg-[#121215] border border-dark-border hover:border-gold/45 rounded cursor-pointer text-dark-text-muted hover:text-white transition-all">
+                            <Upload className="h-4.5 w-4.5" />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={e => handleSingleFileUpload(e, setAlbumCover)}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      </div>
+                      
+                      {albumCover && (
+                        <div className="sm:col-span-2 space-y-2">
+                          <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold">Cover Photo Preview</label>
+                          <div className="relative aspect-video w-full sm:max-w-md rounded overflow-hidden border border-gold/20 bg-[#050505]">
+                            <img src={albumCover} alt="Cover Preview" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => setAlbumCover('')}
+                              className="absolute top-2 right-2 p-1.5 bg-black/70 border border-white/10 hover:border-red-500 hover:text-red-400 rounded text-white transition-all cursor-pointer text-xs"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Short Description / Subtitle</label>
+                        <textarea
+                          value={albumDesc}
+                          onChange={e => setAlbumDesc(e.target.value)}
+                          rows={2}
+                          placeholder="Provide an elegant description for this portfolio collection..."
+                          className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                        />
+                      </div>
+                      <div className="sm:col-span-2 flex justify-end space-x-3">
                         <button
                           type="button"
                           onClick={handleCancelAlbumEdit}
                           className="px-5 py-2.5 text-xs uppercase tracking-widest border border-white/10 hover:border-white/20 text-white rounded cursor-pointer transition-all"
                         >
-                          Cancel
+                          Cancel / Hide
                         </button>
-                      )}
-                      <button
-                        type="submit"
-                        className="px-6 py-2.5 bg-gold-gradient text-black font-semibold text-xs uppercase tracking-widest rounded hover:scale-102 cursor-pointer transition-all"
-                      >
-                        {editingAlbumId ? 'Save Changes' : 'Create Album'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                        <button
+                          type="submit"
+                          className="px-6 py-2.5 bg-gold-gradient text-black font-semibold text-xs uppercase tracking-widest rounded hover:scale-102 cursor-pointer transition-all"
+                        >
+                          {editingAlbumId ? 'Save Changes' : 'Create Album'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
 
                 {/* Photo Manager (Only active if an album is selected) */}
                 {selectedAlbumId && (
-                  <div className="p-6 rounded-lg bg-dark-card border border-gold/25 animate-fade-in">
-                    <div className="flex items-center justify-between mb-6">
+                  <div className="p-6 rounded-lg bg-dark-card border border-gold/25 animate-fade-in space-y-6">
+                    <div className="flex items-center justify-between pb-4 border-b border-dark-border/40">
                       <h3 className="font-serif text-lg text-white font-medium tracking-wider">
                         Manage Photos: <span className="text-gold font-light">{albums.find(a => a.id === selectedAlbumId)?.title}</span>
                       </h3>
                       <button
-                        onClick={() => setSelectedAlbumId(null)}
-                        className="p-1.5 border border-white/10 hover:border-white/20 rounded text-dark-text-muted hover:text-white text-[10px] uppercase tracking-widest"
+                        onClick={() => {
+                          setSelectedAlbumId(null);
+                          setPendingPhotos([]);
+                        }}
+                        className="p-1.5 border border-white/10 hover:border-white/20 rounded text-dark-text-muted hover:text-white text-[10px] uppercase tracking-widest cursor-pointer"
                       >
                         Close Manager
                       </button>
                     </div>
 
                     {/* Photo Uploader */}
-                    <form onSubmit={handleAddPhotos} className="mb-8 space-y-4">
-                      <div>
-                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">
-                          Add Multiple Photos (Paste URLs separated by comma or new line)
-                        </label>
-                        <textarea
-                          value={photoUrlsInput}
-                          onChange={e => setPhotoUrlsInput(e.target.value)}
-                          rows={3}
-                          placeholder="Paste image URLs here..."
-                          className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
-                        />
-                      </div>
-                      
-                      {/* File upload option */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <label className="flex items-center space-x-2 px-4 py-2 border border-dark-border hover:border-gold/30 bg-[#050505] hover:bg-gold/5 text-xs text-dark-text-muted hover:text-white rounded cursor-pointer transition-all">
-                            <Upload className="h-4 w-4" />
-                            <span>Upload Local File</span>
+                    <form onSubmit={handleAddPhotos} className="space-y-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">
+                            Option A: Select & Upload Local Images (Fast & Compressed)
+                          </label>
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-dark-border hover:border-gold/40 rounded-lg cursor-pointer bg-[#050505] hover:bg-gold/5 transition-all p-4">
+                            <Upload className="h-7 w-7 text-dark-text-muted group-hover:text-gold mb-2" />
+                            <span className="text-xs text-dark-text-muted font-medium text-center">
+                              Tap to select photo(s) from camera roll
+                            </span>
+                            <span className="text-[9px] text-dark-text-muted/60 mt-1 uppercase tracking-wider">
+                              Supports multiple file upload
+                            </span>
                             <input
                               type="file"
                               accept="image/*"
-                              onChange={e => handleFileUpload(e, (base64) => setPhotoUrlsInput(prev => prev ? `${prev}\n${base64}` : base64))}
+                              multiple
+                              onChange={handlePhotoFilesSelect}
                               className="hidden"
                             />
                           </label>
                         </div>
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">
+                            Option B: Paste Web Image URLs (Separated by comma or new line)
+                          </label>
+                          <textarea
+                            value={photoUrlsInput}
+                            onChange={e => setPhotoUrlsInput(e.target.value)}
+                            rows={4}
+                            placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"
+                            className="w-full h-32 bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Pending upload list preview */}
+                      {pendingPhotos.length > 0 && (
+                        <div className="space-y-3 p-4 rounded bg-black/30 border border-gold/15 animate-fade-in">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] uppercase tracking-widest text-gold font-bold">
+                              Selected Images to Add ({pendingPhotos.length})
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setPendingPhotos([])}
+                              className="text-[9px] uppercase tracking-widest text-red-400 hover:underline cursor-pointer"
+                            >
+                              Clear List
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 max-h-48 overflow-y-auto p-1 scroll-smooth">
+                            {pendingPhotos.map((url, idx) => (
+                              <div key={idx} className="relative aspect-square rounded border border-dark-border overflow-hidden bg-black/40 group">
+                                <img src={url} alt="Pending upload preview" className="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onClick={() => setPendingPhotos(prev => prev.filter((_, i) => i !== idx))}
+                                  className="absolute top-1 right-1 p-1 bg-black/70 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition-all cursor-pointer"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex justify-end pt-2">
                         <button
                           type="submit"
-                          className="px-6 py-2.5 bg-gold-gradient text-black font-semibold text-xs uppercase tracking-widest rounded hover:scale-102 cursor-pointer transition-all"
+                          disabled={pendingPhotos.length === 0 && !photoUrlsInput.trim()}
+                          className="w-full sm:w-auto px-8 py-3.5 bg-gold-gradient text-black font-semibold text-xs uppercase tracking-widest rounded hover:scale-102 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gold/10"
                         >
-                          Add Photos
+                          Save Photos to Album
                         </button>
                       </div>
                     </form>
 
                     {/* Photos list in album */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {photos.filter(p => p.albumId === selectedAlbumId).map(photo => (
-                        <div key={photo.id} className="relative group rounded border border-dark-border overflow-hidden bg-[#050505] aspect-square">
-                          <img src={photo.url} alt="Sub-gallery" className="w-full h-full object-cover" />
-                          <button
-                            onClick={() => deletePhoto(photo.id)}
-                            className="absolute top-2 right-2 p-1.5 bg-black/60 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      ))}
+                    <div>
+                      <h4 className="text-[10px] uppercase tracking-widest text-dark-text-muted font-bold mb-3">
+                        Album Photos ({photos.filter(p => p.albumId === selectedAlbumId).length})
+                      </h4>
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                        {photos.filter(p => p.albumId === selectedAlbumId).map(photo => (
+                          <div key={photo.id} className="relative group rounded border border-dark-border overflow-hidden bg-[#050505] aspect-square">
+                            <img src={photo.url} alt="Sub-gallery" className="w-full h-full object-cover" />
+                            <button
+                              onClick={() => deletePhoto(photo.id)}
+                              className="absolute top-2 right-2 p-1.5 bg-black/70 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded transition-all cursor-pointer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -707,7 +887,7 @@ export const AdminDashboard: React.FC = () => {
                               <input
                                 type="file"
                                 accept="image/*"
-                                onChange={e => handleFileUpload(e, setHeroBgUrl)}
+                                onChange={e => handleSingleFileUpload(e, setHeroBgUrl)}
                                 className="hidden"
                               />
                             </label>
@@ -789,7 +969,7 @@ export const AdminDashboard: React.FC = () => {
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={e => handleFileUpload(e, setQrCodeUrl)}
+                            onChange={e => handleSingleFileUpload(e, setQrCodeUrl)}
                             className="hidden"
                           />
                         </label>
