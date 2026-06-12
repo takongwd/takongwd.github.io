@@ -97,6 +97,76 @@ const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
 // Initial Default Mock Data (Luxury Wedding Assets)
 const DEFAULT_ALBUMS: Album[] = [
   {
+    id: 'album-pre-wedding-tor-kar-ning',
+    title: 'Pre Wedding Tor Kar & Ning',
+    description: 'A romantic pre-wedding photo session of Tor Kar & Ning. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tor Kar & Ning. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
+    coverUrl: '/albums/pre-wedding-tor-kar-ning/1.jpg',
+    createdAt: new Date(Date.now() - 0 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-phonexay-viengphet',
+    title: 'Wedding Day Phonexay & Viengphet',
+    description: 'A beautiful wedding day celebration of Phonexay & Viengphet. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phonexay & Viengphet. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-phonexay-viengphet/1.jpg',
+    createdAt: new Date(Date.now() - 1 * 10000).toISOString()
+  },
+  {
+    id: 'album-pre-wedding-bank-pookie',
+    title: 'Pre Wedding Bank & Pookie',
+    description: 'A romantic pre-wedding photo session of Bank & Pookie. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Bank & Pookie. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
+    coverUrl: '/albums/pre-wedding-bank-pookie/1.jpg',
+    createdAt: new Date(Date.now() - 2 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-houmphan-soumontha',
+    title: 'Wedding Day HOUMPHAN & SOUMONTHA',
+    description: 'A beautiful wedding day celebration of HOUMPHAN & SOUMONTHA. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ HOUMPHAN & SOUMONTHA. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-houmphan-soumontha/1.jpg',
+    createdAt: new Date(Date.now() - 3 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-odai-sophia',
+    title: 'Wedding Day Odai & Sophia',
+    description: 'A beautiful wedding day celebration of Odai & Sophia. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Odai & Sophia. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-odai-sophia/1.jpg',
+    createdAt: new Date(Date.now() - 4 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-chokxay-latda',
+    title: 'Wedding Day ໂຊກໄຊ & ລັດດາ',
+    description: 'A beautiful wedding day celebration of Chokxay & Latda. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ ໂຊກໄຊ & ລັດດາ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-chokxay-latda/1.jpg',
+    createdAt: new Date(Date.now() - 5 * 10000).toISOString()
+  },
+  {
+    id: 'album-engagement-tinu',
+    title: 'ງານໝັ້ນ Tinu',
+    description: 'A romantic engagement celebration of Tinu. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tinu. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    coverUrl: '/albums/engagement-tinu/1.jpg',
+    createdAt: new Date(Date.now() - 6 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-25-nov-2025',
+    title: 'Wedding 25 nov 2025',
+    description: 'A beautiful wedding day celebration of November 25, 2025. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-25-nov-2025/0.jpg',
+    createdAt: new Date(Date.now() - 7 * 10000).toISOString()
+  },
+  {
+    id: 'album-wedding-aiy-tamon',
+    title: 'Wedding Days Aiy & Tamon',
+    description: 'A beautiful wedding day celebration of Aiy & Tamon. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Aiy & Tamon. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    coverUrl: '/albums/wedding-aiy-tamon/0.jpg',
+    createdAt: new Date(Date.now() - 8 * 10000).toISOString()
+  },
+  {
+    id: 'album-engagement-phoutthasin-kataiy',
+    title: 'ງານໝັ້ນ Phoutthasin & Kataiy',
+    description: 'A romantic engagement celebration of Phoutthasin & Kataiy. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phoutthasin & Kataiy. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    coverUrl: '/albums/engagement-phoutthasin-kataiy/1.jpg',
+    createdAt: new Date(Date.now() - 9 * 10000).toISOString()
+  },
+  {
     id: 'album-engagement-thanakon-nanhtaly',
     title: 'ງານໝັ້ນ Thanakon 💗 Nanhtaly',
     description: 'A romantic engagement celebration of Thanakon & Nanhtaly. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Thanakon ແລະ Nanhtaly. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
@@ -207,7 +277,107 @@ const LB_PHOTO_FILES = [
   '35.jpg', '36.jpg'
 ];
 
+const PRE_WEDDING_TOR_KAR_NING_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg'
+];
+
+const WEDDING_PHONEXAY_VIENGPHET_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', '23.jpg', '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg', '29.jpg', '30.jpg', '31.jpg', '32.jpg', '33.jpg', '34.jpg', '35.jpg', '36.jpg', '37.jpg', '38.jpg', '39.jpg', '40.jpg', '41.jpg', '42.jpg', '43.jpg', '44.jpg', '45.jpg', '46.jpg', '47.jpg', '48.jpg', '49.jpg', '50.jpg', '51.jpg'
+];
+
+const PRE_WEDDING_BANK_POOKIE_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg'
+];
+
+const WEDDING_HOUMPHAN_SOUMONTHA_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg'
+];
+
+const WEDDING_ODAI_SOPHIA_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg'
+];
+
+const WEDDING_CHOKXAY_LATDA_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg'
+];
+
+const ENGAGEMENT_TINU_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '2-0.jpg', '2-1.jpg', '3.jpg', '3-0.jpg', '3-01.jpg', '3-1.jpg', '3-2.jpg', '3-3.jpg', '4.jpg', '4-1.jpg', '4-2.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '10-1.jpg', '10-2.jpg', '10-3.jpg', '10-4.jpg', '10-5.jpg', '10-6.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg'
+];
+
+const WEDDING_25_NOV_2025_PHOTO_FILES = [
+  '0.jpg', '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', '23.jpg', '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg', '29.jpg', '30.jpg'
+];
+
+const WEDDING_AIY_TAMON_PHOTO_FILES = [
+  '0.jpg', '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', '23.jpg', '24.jpg', '25.jpg'
+];
+
+const ENGAGEMENT_PHOUTTHASIN_KATAIY_PHOTO_FILES = [
+  '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', '23.jpg', '24.jpg'
+];
+
 const DEFAULT_PHOTOS: Photo[] = [
+  ...PRE_WEDDING_TOR_KAR_NING_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-pre-wedding-tor-kar-ning-' + idx,
+    albumId: 'album-pre-wedding-tor-kar-ning',
+    url: '/albums/pre-wedding-tor-kar-ning/' + file,
+    createdAt: new Date(Date.now() - 0 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_PHONEXAY_VIENGPHET_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-phonexay-viengphet-' + idx,
+    albumId: 'album-wedding-phonexay-viengphet',
+    url: '/albums/wedding-phonexay-viengphet/' + file,
+    createdAt: new Date(Date.now() - 1 * 10000 - idx * 60000).toISOString()
+  })),
+  ...PRE_WEDDING_BANK_POOKIE_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-pre-wedding-bank-pookie-' + idx,
+    albumId: 'album-pre-wedding-bank-pookie',
+    url: '/albums/pre-wedding-bank-pookie/' + file,
+    createdAt: new Date(Date.now() - 2 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_HOUMPHAN_SOUMONTHA_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-houmphan-soumontha-' + idx,
+    albumId: 'album-wedding-houmphan-soumontha',
+    url: '/albums/wedding-houmphan-soumontha/' + file,
+    createdAt: new Date(Date.now() - 3 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_ODAI_SOPHIA_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-odai-sophia-' + idx,
+    albumId: 'album-wedding-odai-sophia',
+    url: '/albums/wedding-odai-sophia/' + file,
+    createdAt: new Date(Date.now() - 4 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_CHOKXAY_LATDA_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-chokxay-latda-' + idx,
+    albumId: 'album-wedding-chokxay-latda',
+    url: '/albums/wedding-chokxay-latda/' + file,
+    createdAt: new Date(Date.now() - 5 * 10000 - idx * 60000).toISOString()
+  })),
+  ...ENGAGEMENT_TINU_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-engagement-tinu-' + idx,
+    albumId: 'album-engagement-tinu',
+    url: '/albums/engagement-tinu/' + file,
+    createdAt: new Date(Date.now() - 6 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_25_NOV_2025_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-25-nov-2025-' + idx,
+    albumId: 'album-wedding-25-nov-2025',
+    url: '/albums/wedding-25-nov-2025/' + file,
+    createdAt: new Date(Date.now() - 7 * 10000 - idx * 60000).toISOString()
+  })),
+  ...WEDDING_AIY_TAMON_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-wedding-aiy-tamon-' + idx,
+    albumId: 'album-wedding-aiy-tamon',
+    url: '/albums/wedding-aiy-tamon/' + file,
+    createdAt: new Date(Date.now() - 8 * 10000 - idx * 60000).toISOString()
+  })),
+  ...ENGAGEMENT_PHOUTTHASIN_KATAIY_PHOTO_FILES.map((file, idx) => ({
+    id: 'photo-engagement-phoutthasin-kataiy-' + idx,
+    albumId: 'album-engagement-phoutthasin-kataiy',
+    url: '/albums/engagement-phoutthasin-kataiy/' + file,
+    createdAt: new Date(Date.now() - 9 * 10000 - idx * 60000).toISOString()
+  })),
   // Engagement Thanakon & Nanhtaly photos
   ...SOUKHAUN_PHOTO_FILES.map((file, idx) => ({
     id: `photo-soukhaun-${idx}`,
@@ -707,48 +877,13 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (localAlbums) {
       const parsedAlbums = JSON.parse(localAlbums);
       let updated = false;
-      // Migration: inject L&B Paklai album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-lb-paklai')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-lb-paklai')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject P&M Paklai album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-pm-paklai')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-pm-paklai')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject SANTI & SOUTTHASONE album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-santi-soutthasone')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-santi-soutthasone')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject Pre-Wedding Anousack & Mayury album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-prewedding-anousack-mayury')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-prewedding-anousack-mayury')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject Pre-Wedding Collection Laos album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-prewedding-collection-laos')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-prewedding-collection-laos')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject Anousack & Mayury at 2020 album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-wedding-days-anousack-mayury-2020')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-wedding-days-anousack-mayury-2020')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
-      // Migration: inject Engagement Thanakon & Nanhtaly album if it is missing
-      if (!parsedAlbums.some((a: any) => a.id === 'album-engagement-thanakon-nanhtaly')) {
-        const newAlbum = DEFAULT_ALBUMS.find(a => a.id === 'album-engagement-thanakon-nanhtaly')!;
-        parsedAlbums.unshift(newAlbum);
-        updated = true;
-      }
+      // Auto-migrate any missing albums from DEFAULT_ALBUMS list
+      DEFAULT_ALBUMS.forEach(defaultAlbum => {
+        if (!parsedAlbums.some((a: any) => a.id === defaultAlbum.id)) {
+          parsedAlbums.unshift(defaultAlbum);
+          updated = true;
+        }
+      });
       if (updated) {
         localStorage.setItem('wedding_albums', JSON.stringify(parsedAlbums));
       }
@@ -763,48 +898,15 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (localPhotos) {
       let parsedPhotos = JSON.parse(localPhotos);
       let updated = false;
-      // Migration: inject L&B Paklai photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-lb-paklai')) {
-        const lbPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-lb-paklai');
-        parsedPhotos = [...lbPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject P&M Paklai photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-pm-paklai')) {
-        const pmPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-pm-paklai');
-        parsedPhotos = [...pmPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject SANTI & SOUTTHASONE photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-santi-soutthasone')) {
-        const santiPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-santi-soutthasone');
-        parsedPhotos = [...santiPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject Pre-Wedding Anousack & Mayury photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-prewedding-anousack-mayury')) {
-        const prewedPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-prewedding-anousack-mayury');
-        parsedPhotos = [...prewedPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject Pre-Wedding Collection Laos photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-prewedding-collection-laos')) {
-        const prewedCollPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-prewedding-collection-laos');
-        parsedPhotos = [...prewedCollPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject Anousack & Mayury at 2020 photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-wedding-days-anousack-mayury-2020')) {
-        const amPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-wedding-days-anousack-mayury-2020');
-        parsedPhotos = [...amPhotos, ...parsedPhotos];
-        updated = true;
-      }
-      // Migration: inject Engagement Thanakon & Nanhtaly photos if missing
-      if (!parsedPhotos.some((p: any) => p.albumId === 'album-engagement-thanakon-nanhtaly')) {
-        const soukhaunPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === 'album-engagement-thanakon-nanhtaly');
-        parsedPhotos = [...soukhaunPhotos, ...parsedPhotos];
-        updated = true;
-      }
+      // Auto-migrate any missing photos from DEFAULT_PHOTOS based on albumId
+      const existingAlbumIds = new Set(parsedPhotos.map((p: any) => p.albumId));
+      DEFAULT_ALBUMS.forEach(defaultAlbum => {
+        if (!existingAlbumIds.has(defaultAlbum.id)) {
+          const albumPhotos = DEFAULT_PHOTOS.filter(p => p.albumId === defaultAlbum.id);
+          parsedPhotos = [...albumPhotos, ...parsedPhotos];
+          updated = true;
+        }
+      });
       if (updated) {
         localStorage.setItem('wedding_photos', JSON.stringify(parsedPhotos));
       }
