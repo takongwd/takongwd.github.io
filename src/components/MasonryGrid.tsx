@@ -118,7 +118,7 @@ export const MasonryGrid: React.FC = () => {
         {/* Active Album Description */}
         {activeAlbum && (
           <div className="max-w-2xl mx-auto text-center mb-12 animate-fade-in">
-            <p className={`font-light leading-relaxed text-dark-text-muted ${
+            <p className={`font-light leading-relaxed text-dark-text-muted whitespace-pre-line ${
               language === 'lo' ? 'font-handwriting text-lg md:text-xl' : 'text-sm md:text-base italic'
             }`}>
               "{activeAlbum.description}"

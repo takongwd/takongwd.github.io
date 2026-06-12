@@ -99,119 +99,119 @@ const DEFAULT_ALBUMS: Album[] = [
   {
     id: 'album-pre-wedding-tor-kar-ning',
     title: 'Pre Wedding Tor Kar & Ning',
-    description: 'A romantic pre-wedding photo session of Tor Kar & Ning. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tor Kar & Ning. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
+    description: 'A romantic pre-wedding photo session of Tor Kar & Ning. Capture of sweet glances and elegant portraits.\nພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tor Kar & Ning. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
     coverUrl: '/albums/pre-wedding-tor-kar-ning/1.jpg',
     createdAt: new Date(Date.now() - 0 * 10000).toISOString()
   },
   {
     id: 'album-wedding-phonexay-viengphet',
     title: 'Wedding Day Phonexay & Viengphet',
-    description: 'A beautiful wedding day celebration of Phonexay & Viengphet. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phonexay & Viengphet. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of Phonexay & Viengphet. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phonexay & Viengphet. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-phonexay-viengphet/1.jpg',
     createdAt: new Date(Date.now() - 1 * 10000).toISOString()
   },
   {
     id: 'album-pre-wedding-bank-pookie',
     title: 'Pre Wedding Bank & Pookie',
-    description: 'A romantic pre-wedding photo session of Bank & Pookie. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Bank & Pookie. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
+    description: 'A romantic pre-wedding photo session of Bank & Pookie. Capture of sweet glances and elegant portraits.\nພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Bank & Pookie. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
     coverUrl: '/albums/pre-wedding-bank-pookie/1.jpg',
     createdAt: new Date(Date.now() - 2 * 10000).toISOString()
   },
   {
     id: 'album-wedding-houmphan-soumontha',
     title: 'Wedding Day HOUMPHAN & SOUMONTHA',
-    description: 'A beautiful wedding day celebration of HOUMPHAN & SOUMONTHA. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ HOUMPHAN & SOUMONTHA. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of HOUMPHAN & SOUMONTHA. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ HOUMPHAN & SOUMONTHA. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-houmphan-soumontha/1.jpg',
     createdAt: new Date(Date.now() - 3 * 10000).toISOString()
   },
   {
     id: 'album-wedding-odai-sophia',
     title: 'Wedding Day Odai & Sophia',
-    description: 'A beautiful wedding day celebration of Odai & Sophia. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Odai & Sophia. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of Odai & Sophia. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Odai & Sophia. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-odai-sophia/1.jpg',
     createdAt: new Date(Date.now() - 4 * 10000).toISOString()
   },
   {
     id: 'album-wedding-chokxay-latda',
     title: 'Wedding Day ໂຊກໄຊ & ລັດດາ',
-    description: 'A beautiful wedding day celebration of Chokxay & Latda. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ ໂຊກໄຊ & ລັດດາ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of Chokxay & Latda. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ ໂຊກໄຊ & ລັດດາ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-chokxay-latda/1.jpg',
     createdAt: new Date(Date.now() - 5 * 10000).toISOString()
   },
   {
     id: 'album-engagement-tinu',
     title: 'ງານໝັ້ນ Tinu',
-    description: 'A romantic engagement celebration of Tinu. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tinu. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic engagement celebration of Tinu. Capture of sweet glances and traditional Lao custom.\nງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tinu. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/engagement-tinu/1.jpg',
     createdAt: new Date(Date.now() - 6 * 10000).toISOString()
   },
   {
     id: 'album-wedding-25-nov-2025',
     title: 'Wedding 25 nov 2025',
-    description: 'A beautiful wedding day celebration of November 25, 2025. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of November 25, 2025. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກ. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-25-nov-2025/0.jpg',
     createdAt: new Date(Date.now() - 7 * 10000).toISOString()
   },
   {
     id: 'album-wedding-aiy-tamon',
     title: 'Wedding Days Aiy & Tamon',
-    description: 'A beautiful wedding day celebration of Aiy & Tamon. Capturing the romance and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Aiy & Tamon. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
+    description: 'A beautiful wedding day celebration of Aiy & Tamon. Capturing the romance and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Aiy & Tamon. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຄວາມຮັກ.',
     coverUrl: '/albums/wedding-aiy-tamon/0.jpg',
     createdAt: new Date(Date.now() - 8 * 10000).toISOString()
   },
   {
     id: 'album-engagement-phoutthasin-kataiy',
     title: 'ງານໝັ້ນ Phoutthasin & Kataiy',
-    description: 'A romantic engagement celebration of Phoutthasin & Kataiy. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phoutthasin & Kataiy. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic engagement celebration of Phoutthasin & Kataiy. Capture of sweet glances and traditional Lao custom.\nງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Phoutthasin & Kataiy. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/engagement-phoutthasin-kataiy/1.jpg',
     createdAt: new Date(Date.now() - 9 * 10000).toISOString()
   },
   {
     id: 'album-engagement-thanakon-nanhtaly',
     title: 'ງານໝັ້ນ Thanakon 💗 Nanhtaly',
-    description: 'A romantic engagement celebration of Thanakon & Nanhtaly. Capture of sweet glances and traditional Lao custom. / ງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Thanakon ແລະ Nanhtaly. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic engagement celebration of Thanakon & Nanhtaly. Capture of sweet glances and traditional Lao custom.\nງານໝັ້ນອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Thanakon ແລະ Nanhtaly. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/engagement-thanakon-nanhtaly/1.jpg',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'album-wedding-days-anousack-mayury-2020',
     title: 'Anousack & Mayury at 2020',
-    description: 'A romantic wedding celebration of Anousack & Mayury at 2020. Capture of sweet glances and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Anousack ແລະ Mayury ໃນປີ 2020. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic wedding celebration of Anousack & Mayury at 2020. Capture of sweet glances and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Anousack ແລະ Mayury ໃນປີ 2020. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/wedding-days-anousack-mayury-2020/1.jpg',
     createdAt: new Date(Date.now() - 1000).toISOString(),
   },
   {
     id: 'album-prewedding-collection-laos',
     title: 'Prewedding_collection_Laos',
-    description: 'A romantic pre-wedding photo collection in Laos. Capture of sweet glances and traditional garments. / ພາບຖ່າຍພຣີເວດດິ້ງຄໍເລັກຊັນອັນແສນຫວານ ແລະ ໂຣແມນຕິກ. ບັນທຶກຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນງົດງາມຂອງລາວ.',
+    description: 'A romantic pre-wedding photo collection in Laos. Capture of sweet glances and traditional garments.\nພາບຖ່າຍພຣີເວດດິ້ງຄໍເລັກຊັນອັນແສນຫວານ ແລະ ໂຣແມນຕິກ. ບັນທຶກຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນງົດງາມຂອງລາວ.',
     coverUrl: '/albums/prewedding-collection-laos/1.jpg',
     createdAt: new Date(Date.now() - 2000).toISOString(),
   },
   {
     id: 'album-prewedding-anousack-mayury',
     title: 'P r e W e d d i n g : A n o u s a c k & M a y u r y',
-    description: 'A romantic pre-wedding photo session of Anousack & Mayury. Capture of sweet glances and elegant portrait. / ພາບພຣີເວດດິ້ງອັນແsnຫວານ ແລະ ໂຣແມນຕິກຂອງ Anousack ແລະ Mayury. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
+    description: 'A romantic pre-wedding photo session of Anousack & Mayury. Capture of sweet glances and elegant portrait.\nພາບພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Anousack ແລະ Mayury. ບັນທຶກທຸກຮອຍຍິ້ມ ແລະ ຊ່ວງເວລາແຫ່ງຄວາມຮັກ.',
     coverUrl: '/albums/prewedding-anousack-mayury/1.jpg',
     createdAt: new Date(Date.now() - 3000).toISOString(),
   },
   {
     id: 'album-santi-soutthasone',
     title: 'Wedding Days SANTI 💗 SOUTTHASONE',
-    description: 'A romantic wedding celebration of SANTI & SOUTTHASONE. Capture of sweet glances and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ SANTI ແລະ SOUTTHASONE. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic wedding celebration of SANTI & SOUTTHASONE. Capture of sweet glances and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ SANTI ແລະ SOUTTHASONE. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/wedding-days-santi-soutthasone/1.jpg',
     createdAt: new Date(Date.now() - 4000).toISOString(),
   },
   {
     id: 'album-pm-paklai',
     title: 'Wedding Days P&M At Paklai',
-    description: 'A romantic wedding celebration of P&M at Paklai. Capture of sweet glances and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ P&M ທີ່ເມືອງປາກລາຍ. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic wedding celebration of P&M at Paklai. Capture of sweet glances and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ P&M ທີ່ເມືອງປາກລາຍ. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/wedding-days-pm-paklai/1.jpg',
     createdAt: new Date(Date.now() - 5000).toISOString(),
   },
   {
     id: 'album-lb-paklai',
     title: 'Wedding Days L&B At Paklai',
-    description: 'A romantic wedding celebration of L&B at Paklai. Capture of sweet glances and traditional Lao custom. / ງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ L&B ທີ່ເມືອງປາກລາຍ. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
+    description: 'A romantic wedding celebration of L&B at Paklai. Capture of sweet glances and traditional Lao custom.\nງານສະຫຼອງມົງຄຸນສົມລົດອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ L&B ທີ່ເມືອງປາກລາຍ. ບັນທຶກທຸກສາຍຕາແຫ່ງຄວາມຮັກ ແລະ ຮີດຄອງປະເພນີອັນຈົບງາມ.',
     coverUrl: '/albums/wedding-days-lb-paklai/1.jpg',
     createdAt: new Date(Date.now() - 6000).toISOString(),
   },
@@ -872,16 +872,22 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const loadLocalData = () => {
-    // Albums
     const localAlbums = localStorage.getItem('wedding_albums');
     if (localAlbums) {
       const parsedAlbums = JSON.parse(localAlbums);
       let updated = false;
-      // Auto-migrate any missing albums from DEFAULT_ALBUMS list
+      // Auto-migrate any missing albums or update default descriptions from DEFAULT_ALBUMS list
       DEFAULT_ALBUMS.forEach(defaultAlbum => {
-        if (!parsedAlbums.some((a: any) => a.id === defaultAlbum.id)) {
+        const existingIdx = parsedAlbums.findIndex((a: any) => a.id === defaultAlbum.id);
+        if (existingIdx === -1) {
           parsedAlbums.unshift(defaultAlbum);
           updated = true;
+        } else {
+          // If the description has changed (e.g. from / to \n format), update it
+          if (parsedAlbums[existingIdx].description !== defaultAlbum.description) {
+            parsedAlbums[existingIdx].description = defaultAlbum.description;
+            updated = true;
+          }
         }
       });
       if (updated) {

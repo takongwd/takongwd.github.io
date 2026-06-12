@@ -3,7 +3,7 @@
 begin;
 
 insert into albums (id, title, description, cover_url, created_at)
-values ('album-pre-wedding-tor-kar-ning', 'Pre Wedding Tor Kar & Ning', 'A romantic pre-wedding photo session of Tor Kar & Ning. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tor Kar & Ning. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.', '/albums/pre-wedding-tor-kar-ning/1.jpg', now() - interval '0 seconds')
+values ('album-pre-wedding-tor-kar-ning', 'Pre Wedding Tor Kar & Ning', 'A romantic pre-wedding photo session of Tor Kar & Ning. Capture of sweet glances and elegant portraits.\nພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Tor Kar & Ning. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.', '/albums/pre-wedding-tor-kar-ning/1.jpg', now() - interval '0 seconds')
 on conflict (id) do update set title = excluded.title, description = excluded.description, cover_url = excluded.cover_url;
 
 insert into photos (id, album_id, url, created_at)
@@ -275,7 +275,7 @@ values ('photo-wedding-phonexay-viengphet-50', 'album-wedding-phonexay-viengphet
 on conflict (id) do update set url = excluded.url;
 
 insert into albums (id, title, description, cover_url, created_at)
-values ('album-pre-wedding-bank-pookie', 'Pre Wedding Bank & Pookie', 'A romantic pre-wedding photo session of Bank & Pookie. Capture of sweet glances and elegant portraits. / ພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Bank & Pookie. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.', '/albums/pre-wedding-bank-pookie/1.jpg', now() - interval '2 seconds')
+values ('album-pre-wedding-bank-pookie', 'Pre Wedding Bank & Pookie', 'A romantic pre-wedding photo session of Bank & Pookie. Capture of sweet glances and elegant portraits.\nພາບຖ່າຍພຣີເວດດິ້ງອັນແສນຫວານ ແລະ ໂຣແມນຕິກຂອງ Bank & Pookie. ບັນທຶກທຸກຊ່ວງເວລາແຫ່ງຄວາມຮັກ.', '/albums/pre-wedding-bank-pookie/1.jpg', now() - interval '2 seconds')
 on conflict (id) do update set title = excluded.title, description = excluded.description, cover_url = excluded.cover_url;
 
 insert into photos (id, album_id, url, created_at)
