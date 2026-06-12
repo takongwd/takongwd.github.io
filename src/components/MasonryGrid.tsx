@@ -136,13 +136,13 @@ export const MasonryGrid: React.FC = () => {
                 <div
                   key={photo.id}
                   onClick={() => openLightbox(index)}
-                  className="relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer photo-shimmer shadow-lg hover:shadow-black/70 transition-all duration-300"
+                  className="relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer photo-shimmer shadow-lg hover:shadow-black/70 transition-all duration-300 aspect-square"
                 >
                   <img
                     src={photo.url}
                     alt="Wedding celebration"
                     loading="lazy"
-                    className="w-full h-auto block group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
                   />
                   
                   {/* Transparent protective shield overlay */}
