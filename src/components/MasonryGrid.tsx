@@ -78,7 +78,7 @@ export const MasonryGrid: React.FC = () => {
             onChange={(e) => handleSelectAlbum(e.target.value)}
             className="w-full bg-[#0d0d0f] border border-gold/30 hover:border-gold focus:border-gold focus:outline-none rounded px-4 py-3.5 text-xs tracking-wider transition-all text-white font-medium text-center"
           >
-            <option value="all" className="bg-[#0d0d0f] text-left">{t.portfolioAllWork}</option>
+            <option value="all" className="bg-[#0d0d0f] text-left">{t.portfolioSelectOption}</option>
             {albums.map((album) => (
               <option key={album.id} value={album.id} className="bg-[#0d0d0f] text-left">
                 {album.title}

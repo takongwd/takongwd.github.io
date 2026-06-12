@@ -20,6 +20,7 @@ export interface TranslationDict {
   portfolioSubtitle: string;
   portfolioTitle: string;
   portfolioAllWork: string;
+  portfolioSelectOption: string;
   portfolioNoPhotos: string;
   portfolioViewCaptures: string;
 
@@ -87,6 +88,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     portfolioSubtitle: 'CURATED STORIES',
     portfolioTitle: 'Our Portfolio',
     portfolioAllWork: 'All Work',
+    portfolioSelectOption: 'Select Album',
     portfolioNoPhotos: 'No photos found in this album yet. Upload photos from the Admin panel!',
     portfolioViewCaptures: 'View Captures',
 
@@ -148,6 +150,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     portfolioSubtitle: 'ເລື່ອງລາວທີ່ຄັດສັນມາ',
     portfolioTitle: 'ອັນລະບັ້ມຜົນງານ',
     portfolioAllWork: 'ຜົນງານທັງໝົດ',
+    portfolioSelectOption: 'ເລືອກເບິ່ງຜົນງານ',
     portfolioNoPhotos: 'ຍັງບໍ່ມີຮູບພາບໃນອັນລະບັ້ມນີ້ເທື່ອ. ອັບໂຫຼດຮູບພາບຈາກໜ້າຜູ້ດູແລ!',
     portfolioViewCaptures: 'ເບິ່ງຮູບພາບ',
 
