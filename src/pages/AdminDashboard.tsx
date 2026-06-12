@@ -7,13 +7,25 @@ import {
   FolderHeart, CalendarRange, Settings, 
   Trash2, Edit2, Upload, Calendar, Clock, Check, X,
   Award, User, Phone, Mail, Image as ImageIcon,
-  ChevronUp, ChevronDown
+  ChevronUp, ChevronDown, ChevronLeft, ChevronRight
 } from 'lucide-react';
+
+const toLocalDateTimeString = (dateStr: string) => {
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const pad = (num: number) => String(num).padStart(2, '0');
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 export const AdminDashboard: React.FC = () => {
   const { 
     albums, photos, pricingPackages, settings, bookings, isAdminAuthenticated, adminLogout,
-    addAlbum, updateAlbum, deleteAlbum, addPhotos, deletePhoto,
+    addAlbum, updateAlbum, deleteAlbum, addPhotos, deletePhoto, reorderPhotos,
     addPackage, updatePackage, deletePackage, reorderPackages, updateSettings,
     updateBookingStatus, deleteBooking
   } = useAppData();
@@ -125,6 +137,8 @@ export const AdminDashboard: React.FC = () => {
   // --- Sub-State for Photo Manager ---
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [photoUrlsInput, setPhotoUrlsInput] = useState('');
+  const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
+  const [editTimestamp, setEditTimestamp] = useState<string>('');
 
   // --- Sub-State for Pricing & Hero Settings ---
   const [promoText, setPromoText] = useState(settings.promotionText);
@@ -262,6 +276,94 @@ export const AdminDashboard: React.FC = () => {
       } finally {
         setUploadProgress(null);
       }
+    }
+  };
+
+  const handleMovePhoto = async (photo: any, direction: 'left' | 'right') => {
+    if (!selectedAlbumId) return;
+    const albumPhotos = [...photos]
+      .filter(p => p.albumId === selectedAlbumId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const index = albumPhotos.findIndex(p => p.id === photo.id);
+    if (direction === 'left' && index > 0) {
+      const targetPhoto = albumPhotos[index - 1];
+      let photoTime = new Date(targetPhoto.createdAt).getTime();
+      let targetTime = new Date(photo.createdAt).getTime();
+      if (photoTime === targetTime) {
+        photoTime += 1000;
+      }
+      await reorderPhotos([
+        { id: photo.id, createdAt: new Date(photoTime).toISOString() },
+        { id: targetPhoto.id, createdAt: new Date(targetTime).toISOString() }
+      ]);
+    } else if (direction === 'right' && index < albumPhotos.length - 1) {
+      const targetPhoto = albumPhotos[index + 1];
+      let photoTime = new Date(targetPhoto.createdAt).getTime();
+      let targetTime = new Date(photo.createdAt).getTime();
+      if (photoTime === targetTime) {
+        photoTime -= 1000;
+      }
+      await reorderPhotos([
+        { id: photo.id, createdAt: new Date(photoTime).toISOString() },
+        { id: targetPhoto.id, createdAt: new Date(targetTime).toISOString() }
+      ]);
+    }
+  };
+
+  const handleUpdatePhotoTime = async (photoId: string, customTimeStr: string) => {
+    if (!customTimeStr) return;
+    try {
+      const parsedDate = new Date(customTimeStr);
+      if (isNaN(parsedDate.getTime())) {
+        alert("Invalid date format. Please use a valid date.");
+        return;
+      }
+      setUploadProgress("Updating photo timestamp...");
+      await reorderPhotos([
+        { id: photoId, createdAt: parsedDate.toISOString() }
+      ]);
+      setEditingPhotoId(null);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update photo timestamp");
+    } finally {
+      setUploadProgress(null);
+    }
+  };
+
+  const handleBulkSort = async (sortType: 'newest' | 'oldest' | 'alphabetical' | 'shuffle') => {
+    if (!selectedAlbumId) return;
+    const albumPhotos = [...photos].filter(p => p.albumId === selectedAlbumId);
+    if (albumPhotos.length === 0) return;
+
+    if (sortType === 'newest') {
+      albumPhotos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else if (sortType === 'oldest') {
+      albumPhotos.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    } else if (sortType === 'alphabetical') {
+      albumPhotos.sort((a, b) => a.url.localeCompare(b.url));
+    } else if (sortType === 'shuffle') {
+      for (let i = albumPhotos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [albumPhotos[i], albumPhotos[j]] = [albumPhotos[j], albumPhotos[i]];
+      }
+    }
+
+    // Assign new timestamps in descending order spaced by 1 minute
+    const baseTime = Date.now();
+    const updates = albumPhotos.map((p, idx) => ({
+      id: p.id,
+      createdAt: new Date(baseTime - idx * 60000).toISOString()
+    }));
+
+    setUploadProgress("Sorting photos...");
+    try {
+      await reorderPhotos(updates);
+    } catch (err) {
+      console.error("Failed to sort photos:", err);
+      alert("Failed to sort photos. Please try again.");
+    } finally {
+      setUploadProgress(null);
     }
   };
 
@@ -787,25 +889,142 @@ export const AdminDashboard: React.FC = () => {
                     </form>
 
                     {/* Photos list in album */}
-                    <div>
-                      <h4 className="text-[10px] uppercase tracking-widest text-dark-text-muted font-bold mb-3">
-                        Album Photos ({photos.filter(p => p.albumId === selectedAlbumId).length})
-                      </h4>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-                        {[...photos]
-                          .filter(p => p.albumId === selectedAlbumId)
-                          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                          .map(photo => (
-                          <div key={photo.id} className="relative group rounded border border-dark-border overflow-hidden bg-[#050505] aspect-square">
-                            <img src={photo.url} alt="Sub-gallery" className="w-full h-full object-cover" />
+                    <div className="space-y-6">
+                      {/* Free Sorting Options Panel */}
+                      <div className="p-4 rounded bg-[#090909] border border-gold/15 space-y-3">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                          <div>
+                            <h4 className="text-[10px] uppercase tracking-widest text-gold font-bold">
+                              Sorting Options / ຈັດລຽງຮູບພາບດ່ວນ
+                            </h4>
+                            <p className="text-[9px] text-dark-text-muted font-light mt-0.5 uppercase tracking-wide">
+                              Bulk sort all photos in this album or move individual photos below.
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
                             <button
-                              onClick={() => deletePhoto(photo.id)}
-                              className="absolute top-2 right-2 p-1.5 bg-black/70 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded transition-all cursor-pointer"
+                              type="button"
+                              onClick={() => handleBulkSort('newest')}
+                              className="px-2.5 py-1.5 bg-white/5 border border-white/10 hover:border-gold/30 text-[9px] text-white hover:text-gold uppercase tracking-widest rounded transition-all cursor-pointer font-semibold"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              Newest First
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleBulkSort('oldest')}
+                              className="px-2.5 py-1.5 bg-white/5 border border-white/10 hover:border-gold/30 text-[9px] text-white hover:text-gold uppercase tracking-widest rounded transition-all cursor-pointer font-semibold"
+                            >
+                              Oldest First
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleBulkSort('alphabetical')}
+                              className="px-2.5 py-1.5 bg-white/5 border border-white/10 hover:border-gold/30 text-[9px] text-white hover:text-gold uppercase tracking-widest rounded transition-all cursor-pointer font-semibold"
+                            >
+                              Filename (A-Z)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleBulkSort('shuffle')}
+                              className="px-2.5 py-1.5 bg-white/5 border border-white/10 hover:border-gold/30 text-[9px] text-white hover:text-gold uppercase tracking-widest rounded transition-all cursor-pointer font-semibold"
+                            >
+                              Shuffle
                             </button>
                           </div>
-                        ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] uppercase tracking-widest text-dark-text-muted font-bold mb-4">
+                          Album Photos ({photos.filter(p => p.albumId === selectedAlbumId).length})
+                        </h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+                          {[...photos]
+                            .filter(p => p.albumId === selectedAlbumId)
+                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .map((photo, idx, arr) => (
+                            <div key={photo.id} className="relative group rounded border border-dark-border overflow-hidden bg-[#050505] aspect-square">
+                              <img src={photo.url} alt="Sub-gallery" className="w-full h-full object-cover" />
+                              
+                              {/* Overlay for time-editing */}
+                              {editingPhotoId === photo.id ? (
+                                <div className="absolute inset-0 bg-black/95 flex flex-col items-center justify-center p-2 space-y-2 z-10 animate-fade-in">
+                                  <span className="text-[9px] uppercase tracking-wider text-gold font-bold">
+                                    Set Sort Time
+                                  </span>
+                                  <input
+                                    type="datetime-local"
+                                    value={editTimestamp}
+                                    onChange={e => setEditTimestamp(e.target.value)}
+                                    className="w-full bg-[#111] border border-gold/30 text-white text-[10px] rounded px-1.5 py-1 focus:outline-none focus:border-gold font-mono"
+                                  />
+                                  <div className="flex justify-center gap-1 w-full">
+                                    <button
+                                      onClick={() => handleUpdatePhotoTime(photo.id, editTimestamp)}
+                                      className="flex-grow py-1 bg-gold text-black rounded text-[9px] font-bold uppercase tracking-wider hover:bg-gold/80 transition-all flex items-center justify-center gap-1 cursor-pointer"
+                                    >
+                                      <Check className="h-3 w-3" /> Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingPhotoId(null)}
+                                      className="px-1.5 py-1 bg-white/10 hover:bg-white/20 text-white rounded text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center cursor-pointer"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : null}
+
+                              {/* Top right delete button (quick action) */}
+                              <button
+                                onClick={() => {
+                                  const confirmDel = window.confirm("ລຶບຮູບພາບນີ້ແທ້ບໍ? / Are you sure you want to delete this photo?");
+                                  if (confirmDel) {
+                                    deletePhoto(photo.id);
+                                  }
+                                }}
+                                className="absolute top-2 right-2 p-1.5 bg-black/70 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded transition-all cursor-pointer z-1"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+
+                              {/* Hover/Touch Bottom Action Overlay */}
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs border-t border-gold/15 py-1.5 px-2 flex items-center justify-around transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 z-1">
+                                {/* Move Left Button */}
+                                <button
+                                  onClick={() => handleMovePhoto(photo, 'left')}
+                                  disabled={idx === 0}
+                                  className="p-1 text-white hover:text-gold transition-all cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                                  title="Move Left (Newer)"
+                                >
+                                  <ChevronLeft className="h-4.5 w-4.5" />
+                                </button>
+
+                                {/* Clock / Edit timestamp */}
+                                <button
+                                  onClick={() => {
+                                    setEditingPhotoId(photo.id);
+                                    setEditTimestamp(toLocalDateTimeString(photo.createdAt));
+                                  }}
+                                  className="p-1 text-white hover:text-gold transition-all cursor-pointer"
+                                  title="Set Sort Time"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                </button>
+
+                                {/* Move Right Button */}
+                                <button
+                                  onClick={() => handleMovePhoto(photo, 'right')}
+                                  disabled={idx === arr.length - 1}
+                                  className="p-1 text-white hover:text-gold transition-all cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                                  title="Move Right (Older)"
+                                >
+                                  <ChevronRight className="h-4.5 w-4.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -72,6 +72,7 @@ interface AppDataContextType {
   // Photo Actions
   addPhotos: (albumId: string, urls: string[]) => Promise<Photo[]>;
   deletePhoto: (id: string) => Promise<void>;
+  reorderPhotos: (updates: { id: string; createdAt: string }[]) => Promise<void>;
   
   // Package Actions
   addPackage: (pkg: Omit<PricingPackage, 'id'>) => Promise<PricingPackage>;
@@ -1084,6 +1085,26 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     saveLocal('wedding_photos', updated);
   };
 
+  const reorderPhotos = async (updates: { id: string; createdAt: string }[]) => {
+    if (isSupabaseMode) {
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('photos')
+          .update({ created_at: update.createdAt })
+          .eq('id', update.id);
+        if (error) throw error;
+      }
+    }
+
+    const updated = photos.map(p => {
+      const update = updates.find(u => u.id === p.id);
+      return update ? { ...p, createdAt: update.createdAt } : p;
+    });
+
+    setPhotos(updated);
+    saveLocal('wedding_photos', updated);
+  };
+
   // Package CRUDS
   const addPackage = async (pkg: Omit<PricingPackage, 'id'>) => {
     const newPkg: PricingPackage = {
@@ -1344,6 +1365,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         deleteAlbum,
         addPhotos,
         deletePhoto,
+        reorderPhotos,
         addPackage,
         updatePackage,
         deletePackage,
