@@ -1047,11 +1047,13 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Photo CRUDS
   const addPhotos = async (albumId: string, urls: string[]) => {
+    const baseTime = Date.now();
     const newPhotos: Photo[] = urls.map((url, idx) => ({
-      id: `p-${Date.now()}-${idx}`,
+      id: `p-${baseTime}-${idx}`,
       albumId,
       url,
-      createdAt: new Date().toISOString()
+      // Sequentially offset timestamps by 1 second to preserve exact selection timeline order when sorting descending
+      createdAt: new Date(baseTime - idx * 1000).toISOString()
     }));
 
     if (isSupabaseMode) {

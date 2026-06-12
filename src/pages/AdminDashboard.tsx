@@ -792,7 +792,10 @@ export const AdminDashboard: React.FC = () => {
                         Album Photos ({photos.filter(p => p.albumId === selectedAlbumId).length})
                       </h4>
                       <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-                        {photos.filter(p => p.albumId === selectedAlbumId).map(photo => (
+                        {[...photos]
+                          .filter(p => p.albumId === selectedAlbumId)
+                          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                          .map(photo => (
                           <div key={photo.id} className="relative group rounded border border-dark-border overflow-hidden bg-[#050505] aspect-square">
                             <img src={photo.url} alt="Sub-gallery" className="w-full h-full object-cover" />
                             <button

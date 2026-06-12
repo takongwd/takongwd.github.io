@@ -30,7 +30,9 @@ export const MasonryGrid: React.FC = () => {
   // Filter photos based on album selection
   const filteredPhotos = selectedAlbumId === 'all'
     ? shuffledAllPhotos.slice(0, visibleCount)
-    : photos.filter(p => p.albumId === selectedAlbumId);
+    : [...photos]
+        .filter(p => p.albumId === selectedAlbumId)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const activeAlbum = albums.find(a => a.id === selectedAlbumId);
 
