@@ -28,6 +28,7 @@ export const AdminDashboard: React.FC = () => {
     }
   }, [isAdminAuthenticated, navigate]);
 
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [pendingPhotos, setPendingPhotos] = useState<string[]>([]);
@@ -158,6 +159,32 @@ export const AdminDashboard: React.FC = () => {
     setTelegramChatId(settings.telegramChatId || '');
   }, [settings]);
 
+  // Auto-scroll to Album Form when opened or editing
+  useEffect(() => {
+    if (showCreateForm || editingAlbumId) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById('album-form');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showCreateForm, editingAlbumId]);
+
+  // Auto-scroll to Photo Manager when an album is selected
+  useEffect(() => {
+    if (selectedAlbumId) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById('photo-manager');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedAlbumId]);
+
   if (!isAdminAuthenticated) return null;
 
   // --- Handlers ---
@@ -188,9 +215,6 @@ export const AdminDashboard: React.FC = () => {
     setAlbumDesc(album.description);
     setAlbumCover(album.coverUrl);
     setShowCreateForm(true); // Expand form when editing
-    setTimeout(() => {
-      document.getElementById('album-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 50);
   };
 
   const handleCancelAlbumEdit = () => {
@@ -332,8 +356,8 @@ export const AdminDashboard: React.FC = () => {
 
     // Scroll to the edit form smoothly
     setTimeout(() => {
-      document.getElementById('package-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 50);
+      document.getElementById('package-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleMovePackage = async (pkg: PricingPackage, direction: 'up' | 'down') => {
@@ -653,7 +677,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Photo Manager (Only active if an album is selected) */}
                 {selectedAlbumId && (
-                  <div className="p-6 rounded-lg bg-dark-card border border-gold/25 animate-fade-in space-y-6">
+                  <div id="photo-manager" className="p-6 rounded-lg bg-dark-card border border-gold/25 animate-fade-in space-y-6">
                     <div className="flex items-center justify-between pb-4 border-b border-dark-border/40">
                       <h3 className="font-serif text-lg text-white font-medium tracking-wider">
                         Manage Photos: <span className="text-gold font-light">{albums.find(a => a.id === selectedAlbumId)?.title}</span>
