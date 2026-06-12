@@ -225,6 +225,18 @@ export const AdminDashboard: React.FC = () => {
     setShowCreateForm(false);
   };
 
+  const handleDeleteAlbum = async (id: string, title: string) => {
+    const confirmDelete = window.confirm(
+      `ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບອັນລະບັ້ມ "${title}"?\nການລຶບນີ້ຈະເຮັດໃຫ້ອັນລະບັ້ມ ແລະ ຮູບພາບທັງໝົດໃນນີ້ຖືກລຶບອອກຖາວອນ.\n\nAre you sure you want to delete the album "${title}"?\nThis will permanently delete the album and all photos inside it.`
+    );
+    if (confirmDelete) {
+      await deleteAlbum(id);
+      if (selectedAlbumId === id) {
+        setSelectedAlbumId(null);
+      }
+    }
+  };
+
   const handleAddPhotos = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAlbumId) return;
@@ -829,7 +841,7 @@ export const AdminDashboard: React.FC = () => {
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
-                            onClick={() => deleteAlbum(album.id)}
+                            onClick={() => handleDeleteAlbum(album.id, album.title)}
                             className="p-2 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:bg-red-500/10 rounded transition-all cursor-pointer"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
