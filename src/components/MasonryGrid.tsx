@@ -127,7 +127,7 @@ export const MasonryGrid: React.FC = () => {
         {/* Photos Grid - Left-to-right Grid Layout */}
         {filteredPhotos.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 items-start">
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 items-start">
               {filteredPhotos.map((photo, index) => (
                 <div
                   key={photo.id}
