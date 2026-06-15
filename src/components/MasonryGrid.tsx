@@ -73,27 +73,11 @@ export const MasonryGrid: React.FC = () => {
           <div className="w-12 h-[1px] bg-gold mx-auto mt-3 md:mt-6" />
         </div>
 
-        {/* Mobile Album Selector Dropdown (Clean, luxury styled select) */}
-        <div className="block md:hidden px-2 mb-8 animate-fade-in">
-          <select
-            value={selectedAlbumId}
-            onChange={(e) => handleSelectAlbum(e.target.value)}
-            className="w-full bg-[#0d0d0f] border border-gold/30 hover:border-gold focus:border-gold focus:outline-none rounded px-4 py-3.5 text-xs tracking-wider transition-all text-white font-medium text-center"
-          >
-            <option value="all" className="bg-[#0d0d0f] text-left">{t.portfolioSelectOption}</option>
-            {albums.map((album) => (
-              <option key={album.id} value={album.id} className="bg-[#0d0d0f] text-left">
-                {album.title}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Desktop Album Selector Tabs */}
-        <div className="hidden md:flex flex-wrap justify-center gap-2 md:gap-4 mb-10 pb-3 scroll-smooth">
+        {/* Album Selector Tabs (Unified for Mobile & Desktop) */}
+        <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 mb-8 md:mb-10 pb-3 scroll-smooth">
           <button
             onClick={() => handleSelectAlbum('all')}
-            className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 shrink-0 ${
+            className={`px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-xs font-semibold uppercase tracking-wider rounded transition-all duration-300 shrink-0 cursor-pointer ${
               selectedAlbumId === 'all'
                 ? 'bg-gold text-black shadow-lg shadow-gold/15'
                 : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
@@ -106,7 +90,7 @@ export const MasonryGrid: React.FC = () => {
             <button
               key={album.id}
               onClick={() => handleSelectAlbum(album.id)}
-              className={`px-6 py-2.5 text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 shrink-0 ${
+              className={`px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-xs font-semibold uppercase tracking-wider rounded transition-all duration-300 shrink-0 cursor-pointer ${
                 selectedAlbumId === album.id
                   ? 'bg-gold text-black shadow-lg shadow-gold/15'
                   : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
