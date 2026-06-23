@@ -152,6 +152,18 @@ export const AdminDashboard: React.FC = () => {
   const [telegramChatId, setTelegramChatId] = useState(settings.telegramChatId || '');
   const [isTestingTelegram, setIsTestingTelegram] = useState(false);
 
+  // Promo Popup Settings
+  const [promoPopupEnabled, setPromoPopupEnabled] = useState(settings.promoPopupEnabled ?? true);
+  const [promoPopupTitle, setPromoPopupTitle] = useState(settings.promoPopupTitle || '');
+  const [promoPopupPkg1Name, setPromoPopupPkg1Name] = useState(settings.promoPopupPkg1Name || '');
+  const [promoPopupPkg1Price, setPromoPopupPkg1Price] = useState(settings.promoPopupPkg1Price || '');
+  const [promoPopupPkg1OrigPrice, setPromoPopupPkg1OrigPrice] = useState(settings.promoPopupPkg1OrigPrice || '');
+  const [promoPopupPkg1Desc, setPromoPopupPkg1Desc] = useState(settings.promoPopupPkg1Desc || '');
+  const [promoPopupPkg2Name, setPromoPopupPkg2Name] = useState(settings.promoPopupPkg2Name || '');
+  const [promoPopupPkg2Price, setPromoPopupPkg2Price] = useState(settings.promoPopupPkg2Price || '');
+  const [promoPopupPkg2OrigPrice, setPromoPopupPkg2OrigPrice] = useState(settings.promoPopupPkg2OrigPrice || '');
+  const [promoPopupPkg2Desc, setPromoPopupPkg2Desc] = useState(settings.promoPopupPkg2Desc || '');
+
   const [pkgName, setPkgName] = useState('');
   const [pkgPrice, setPkgPrice] = useState('');
   const [pkgDesc, setPkgDesc] = useState('');
@@ -171,6 +183,16 @@ export const AdminDashboard: React.FC = () => {
     setTelegramNotificationsEnabled(settings.telegramNotificationsEnabled || false);
     setTelegramBotToken(settings.telegramBotToken || '');
     setTelegramChatId(settings.telegramChatId || '');
+    setPromoPopupEnabled(settings.promoPopupEnabled ?? true);
+    setPromoPopupTitle(settings.promoPopupTitle || '');
+    setPromoPopupPkg1Name(settings.promoPopupPkg1Name || '');
+    setPromoPopupPkg1Price(settings.promoPopupPkg1Price || '');
+    setPromoPopupPkg1OrigPrice(settings.promoPopupPkg1OrigPrice || '');
+    setPromoPopupPkg1Desc(settings.promoPopupPkg1Desc || '');
+    setPromoPopupPkg2Name(settings.promoPopupPkg2Name || '');
+    setPromoPopupPkg2Price(settings.promoPopupPkg2Price || '');
+    setPromoPopupPkg2OrigPrice(settings.promoPopupPkg2OrigPrice || '');
+    setPromoPopupPkg2Desc(settings.promoPopupPkg2Desc || '');
   }, [settings]);
 
   // Auto-scroll to Album Form when opened or editing
@@ -369,18 +391,33 @@ export const AdminDashboard: React.FC = () => {
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateSettings({
-      promotionText: promoText,
-      bankName,
-      bankAccountName: bankAccName,
-      bankAccountNumber: bankAccNum,
-      qrCodeUrl,
-      heroBackgroundUrl: heroBgUrl,
-      telegramNotificationsEnabled,
-      telegramBotToken,
-      telegramChatId
-    });
-    alert('Settings & Payment parameters updated successfully!');
+    try {
+      await updateSettings({
+        promotionText: promoText,
+        bankName,
+        bankAccountName: bankAccName,
+        bankAccountNumber: bankAccNum,
+        qrCodeUrl,
+        heroBackgroundUrl: heroBgUrl,
+        telegramNotificationsEnabled,
+        telegramBotToken,
+        telegramChatId,
+        promoPopupEnabled,
+        promoPopupTitle,
+        promoPopupPkg1Name,
+        promoPopupPkg1Price,
+        promoPopupPkg1OrigPrice,
+        promoPopupPkg1Desc,
+        promoPopupPkg2Name,
+        promoPopupPkg2Price,
+        promoPopupPkg2OrigPrice,
+        promoPopupPkg2Desc
+      });
+      alert('Settings & Payment parameters updated successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save settings. If you are using Supabase mode, please make sure you have executed the new SQL migration script (supabase_promo_setup.sql) in your Supabase SQL Editor to add the required table columns!');
+    }
   };
  
   const handleTestTelegramAlert = async () => {
@@ -1235,7 +1272,156 @@ export const AdminDashboard: React.FC = () => {
                     </div>
  
                     <div className="w-full h-[1px] bg-dark-border my-6" />
- 
+
+                    <div className="space-y-6">
+                      <h4 className="font-serif text-sm text-gold tracking-wide">
+                        ໂປຣໂມຊັ່ນໜ້າທຳອິດ (First-Visit Promo Popup Settings)
+                      </h4>
+                      <p className="text-[11px] text-dark-text-muted font-light leading-relaxed">
+                        ກຳນົດຄ່າແຈ້ງເຕືອນໂປຣໂມຊັ່ນທີ່ຈະສະແດງຂຶ້ນມາໃນໜ້າທຳອິດຂອງເວັບໄຊ້ ເມື່ອລູກຄ້າເຂົ້າມາເບິ່ງເທື່ອທຳອິດ (Customizable Promo Popup).
+                      </p>
+
+                      <div className="flex items-center space-x-2 py-2">
+                        <input
+                          type="checkbox"
+                          id="promoPopupEnabled"
+                          checked={promoPopupEnabled}
+                          onChange={e => setPromoPopupEnabled(e.target.checked)}
+                          className="rounded accent-gold h-4 w-4 bg-[#050505] border-dark-border focus:ring-0"
+                        />
+                        <label htmlFor="promoPopupEnabled" className="text-xs text-dark-text-muted select-none cursor-pointer">
+                          <span className="font-semibold text-white/90">ເປີດໃຊ້ງານປ໊ອບອັບໂປຣໂມຊັ່ນ</span> (Enable Promotion Popup)
+                        </label>
+                      </div>
+
+                      {promoPopupEnabled && (
+                        <div className="space-y-4 animate-fade-in">
+                          <div>
+                            <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">
+                              ຫົວຂໍ້ປ໊ອບອັບ (Promo Popup Title)
+                            </label>
+                            <input
+                              type="text"
+                              value={promoPopupTitle}
+                              onChange={e => setPromoPopupTitle(e.target.value)}
+                              className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all"
+                              placeholder="e.g. ໂປຣໂມຊັ່ນຖ່າຍຮູບແຕ່ງງານ 2026"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                            {/* Package 1 */}
+                            <div className="p-4 rounded-lg bg-black/40 border border-dark-border space-y-4">
+                              <h5 className="font-serif text-xs text-gold uppercase tracking-widest font-semibold">
+                                ແພັກເກດທີ 1 (Package 1)
+                              </h5>
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                  ຊື່ແພັກເກດ (Package Name)
+                                </label>
+                                <input
+                                  type="text"
+                                  value={promoPopupPkg1Name}
+                                  onChange={e => setPromoPopupPkg1Name(e.target.value)}
+                                  className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                    ລາຄາໂປຣ (Promo Price)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={promoPopupPkg1Price}
+                                    onChange={e => setPromoPopupPkg1Price(e.target.value)}
+                                    className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                    ລາຄາປົກກະຕິ (Original Price)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={promoPopupPkg1OrigPrice}
+                                    onChange={e => setPromoPopupPkg1OrigPrice(e.target.value)}
+                                    className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                  ລາຍລະອຽດແພັກເກດ (Package Description)
+                                </label>
+                                <textarea
+                                  value={promoPopupPkg1Desc}
+                                  onChange={e => setPromoPopupPkg1Desc(e.target.value)}
+                                  rows={3}
+                                  className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs transition-all resize-none"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Package 2 */}
+                            <div className="p-4 rounded-lg bg-gold/5 border border-gold/15 space-y-4">
+                              <h5 className="font-serif text-xs text-gold uppercase tracking-widest font-semibold">
+                                ແພັກເກດທີ 2 (Package 2)
+                              </h5>
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                  ຊື່ແພັກເກດ (Package Name)
+                                </label>
+                                <input
+                                  type="text"
+                                  value={promoPopupPkg2Name}
+                                  onChange={e => setPromoPopupPkg2Name(e.target.value)}
+                                  className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                    ລາຄາໂປຣ (Promo Price)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={promoPopupPkg2Price}
+                                    onChange={e => setPromoPopupPkg2Price(e.target.value)}
+                                    className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                    ລາຄາປົກກະຕິ (Original Price)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={promoPopupPkg2OrigPrice}
+                                    onChange={e => setPromoPopupPkg2OrigPrice(e.target.value)}
+                                    className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider transition-all"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-bold mb-1">
+                                  ລາຍລະອຽດແພັກເກດ (Package Description)
+                                </label>
+                                <textarea
+                                  value={promoPopupPkg2Desc}
+                                  onChange={e => setPromoPopupPkg2Desc(e.target.value)}
+                                  rows={3}
+                                  className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs transition-all resize-none"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="w-full h-[1px] bg-dark-border my-6" />
+
                     <div className="space-y-4">
                       <h4 className="font-serif text-sm text-gold tracking-wide">
                         ລະບົບແຈ້ງເຕືອນການຈອງຜ່ານ Telegram (Telegram Booking Alerts)

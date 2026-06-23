@@ -4,6 +4,7 @@ import { Hero } from '../components/Hero';
 import { MasonryGrid } from '../components/MasonryGrid';
 import { Pricing } from '../components/Pricing';
 import { FloatingContact } from '../components/FloatingContact';
+import { PromoModal } from '../components/PromoModal';
 import { Camera, MapPin, Mail, Phone } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import { useTransparentLogo } from '../hooks/useTransparentLogo';
@@ -16,12 +17,25 @@ export const Home: React.FC = () => {
   // Custom transparent logo: color matches our luxury gold (#c5a880)
   const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
 
+  const [showPromo, setShowPromo] = React.useState(false);
+
   React.useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
+
+    // Check sessionStorage to show promo only on first tab visit
+    const shown = sessionStorage.getItem('takong_promo_shown');
+    if (!shown) {
+      setShowPromo(true);
+    }
   }, []);
+
+  const handleClosePromo = () => {
+    sessionStorage.setItem('takong_promo_shown', 'true');
+    setShowPromo(false);
+  };
 
   return (
     <div className="min-h-screen bg-dark-bg text-[#f5f5f7] flex flex-col">
@@ -37,6 +51,11 @@ export const Home: React.FC = () => {
 
       {/* Floating Action Buttons */}
       <FloatingContact />
+
+      {/* Customizable First-visit Promo Popup Modal */}
+      {settings.promoPopupEnabled && showPromo && (
+        <PromoModal onClose={handleClosePromo} />
+      )}
 
       {/* Luxury Footer */}
       <footer className="bg-black border-t border-dark-border py-16 px-4">

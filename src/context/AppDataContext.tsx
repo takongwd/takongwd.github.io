@@ -57,6 +57,16 @@ interface AppDataContextType {
     telegramNotificationsEnabled?: boolean;
     telegramBotToken?: string;
     telegramChatId?: string;
+    promoPopupEnabled?: boolean;
+    promoPopupTitle?: string;
+    promoPopupPkg1Name?: string;
+    promoPopupPkg1Price?: string;
+    promoPopupPkg1OrigPrice?: string;
+    promoPopupPkg1Desc?: string;
+    promoPopupPkg2Name?: string;
+    promoPopupPkg2Price?: string;
+    promoPopupPkg2OrigPrice?: string;
+    promoPopupPkg2Desc?: string;
   };
   bookings: Booking[];
   isAdminAuthenticated: boolean;
@@ -573,7 +583,17 @@ const DEFAULT_SETTINGS = {
   heroBackgroundUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000',
   telegramNotificationsEnabled: true,
   telegramBotToken: '8858034262:AAHS7Bwe2cmuO13AnlImq3epVzA4Xa8pzjg',
-  telegramChatId: '2103336105'
+  telegramChatId: '2103336105',
+  promoPopupEnabled: true,
+  promoPopupTitle: 'ໂປຣໂມຊັ່ນຖ່າຍຮູບແຕ່ງງານ 2026',
+  promoPopupPkg1Name: 'ແພັກເກດ ECONOMY (ເນັ້ນຄວາມປະຢັດ)',
+  promoPopupPkg1Price: '5,900 THB',
+  promoPopupPkg1OrigPrice: '7,670 THB',
+  promoPopupPkg1Desc: 'ຊ່າງພາບ 1 ທ່ານ, ໄຟ LED 2 ດວງ, ຖ່າຍຮູບບໍ່ຈຳກັດ ແລະ ປັບແຕ່ງສີແສງທຸກຮູບ, ສົ່ງວຽນຜ່ານ Google Drive 7-14 ວັນ.',
+  promoPopupPkg2Name: 'ແພັກເກດ STANDARD (ຍອດນິຍົມ)',
+  promoPopupPkg2Price: '10,000 THB',
+  promoPopupPkg2OrigPrice: '13,000 THB',
+  promoPopupPkg2Desc: 'ຊ່າງພາບ 2 ທ່ານ, ໄຟສະຕູດີໂອ 4 ດວງ, ຖ່າຍຮູບບໍ່ຈຳກັດ ແລະ ປັບແຕ່ງສີແສງທຸກຮູບ, ສົ່ງວຽນຜ່ານ Google Drive 7-14 ວັນ + ຟຣີ! ລະບົບສະແກນ QR Code ດາວໂຫລດຮູບພາບໃນງານທັນທີ.'
 };
 
 const DEFAULT_BOOKINGS: Booking[] = [
@@ -666,7 +686,17 @@ const mapSettingsFromDb = (row: any) => ({
   heroBackgroundUrl: row.hero_background_url || '',
   telegramNotificationsEnabled: !!row.telegram_notifications_enabled,
   telegramBotToken: row.telegram_bot_token || '',
-  telegramChatId: row.telegram_chat_id || ''
+  telegramChatId: row.telegram_chat_id || '',
+  promoPopupEnabled: row.promo_popup_enabled !== undefined ? !!row.promo_popup_enabled : true,
+  promoPopupTitle: row.promo_popup_title || 'ໂປຣໂມຊັ່ນຖ່າຍຮູບແຕ່ງງານ 2026',
+  promoPopupPkg1Name: row.promo_popup_pkg1_name || 'ແພັກເກດ ECONOMY (ເນັ້ນຄວາມປະຢັດ)',
+  promoPopupPkg1Price: row.promo_popup_pkg1_price || '5,900 THB',
+  promoPopupPkg1OrigPrice: row.promo_popup_pkg1_orig_price || '7,670 THB',
+  promoPopupPkg1Desc: row.promo_popup_pkg1_desc || 'ຊ່າງພາບ 1 ທ່ານ, ໄຟ LED 2 ດວງ, ຖ່າຍຮູບບໍ່ຈຳກັດ ແລະ ປັບແຕ່ງສີແສງທຸກຮູບ, ສົ່ງວຽນຜ່ານ Google Drive 7-14 ວັນ.',
+  promoPopupPkg2Name: row.promo_popup_pkg2_name || 'ແພັກເກດ STANDARD (ຍອດນິຍົມ)',
+  promoPopupPkg2Price: row.promo_popup_pkg2_price || '10,000 THB',
+  promoPopupPkg2OrigPrice: row.promo_popup_pkg2_orig_price || '13,000 THB',
+  promoPopupPkg2Desc: row.promo_popup_pkg2_desc || 'ຊ່າງພາບ 2 ທ່ານ, ໄຟສະຕູດີໂອ 4 ດວງ, ຖ່າຍຮູບບໍ່ຈຳກັດ ແລະ ປັບແຕ່ງສີແສງທຸກຮູບ, ສົ່ງວຽນຜ່ານ Google Drive 7-14 ວັນ + ຟຣີ! ລະບົບສະແກນ QR Code ດາວໂຫລດຮູບພາບໃນງານທັນທີ.'
 });
 
 const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']>) => ({
@@ -680,7 +710,17 @@ const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']>) => (
   ...(settings.heroBackgroundUrl !== undefined && { hero_background_url: settings.heroBackgroundUrl }),
   ...(settings.telegramNotificationsEnabled !== undefined && { telegram_notifications_enabled: settings.telegramNotificationsEnabled }),
   ...(settings.telegramBotToken !== undefined && { telegram_bot_token: settings.telegramBotToken }),
-  ...(settings.telegramChatId !== undefined && { telegram_chat_id: settings.telegramChatId })
+  ...(settings.telegramChatId !== undefined && { telegram_chat_id: settings.telegramChatId }),
+  ...(settings.promoPopupEnabled !== undefined && { promo_popup_enabled: settings.promoPopupEnabled }),
+  ...(settings.promoPopupTitle !== undefined && { promo_popup_title: settings.promoPopupTitle }),
+  ...(settings.promoPopupPkg1Name !== undefined && { promo_popup_pkg1_name: settings.promoPopupPkg1Name }),
+  ...(settings.promoPopupPkg1Price !== undefined && { promo_popup_pkg1_price: settings.promoPopupPkg1Price }),
+  ...(settings.promoPopupPkg1OrigPrice !== undefined && { promo_popup_pkg1_orig_price: settings.promoPopupPkg1OrigPrice }),
+  ...(settings.promoPopupPkg1Desc !== undefined && { promo_popup_pkg1_desc: settings.promoPopupPkg1Desc }),
+  ...(settings.promoPopupPkg2Name !== undefined && { promo_popup_pkg2_name: settings.promoPopupPkg2Name }),
+  ...(settings.promoPopupPkg2Price !== undefined && { promo_popup_pkg2_price: settings.promoPopupPkg2Price }),
+  ...(settings.promoPopupPkg2OrigPrice !== undefined && { promo_popup_pkg2_orig_price: settings.promoPopupPkg2OrigPrice }),
+  ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -964,6 +1004,20 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         parsed.telegramNotificationsEnabled = true;
         parsed.telegramBotToken = '8858034262:AAHS7Bwe2cmuO13AnlImq3epVzA4Xa8pzjg';
         parsed.telegramChatId = '2103336105';
+        needsUpdate = true;
+      }
+      // Migration: inject promo popup defaults if missing
+      if (parsed.promoPopupEnabled === undefined) {
+        parsed.promoPopupEnabled = DEFAULT_SETTINGS.promoPopupEnabled;
+        parsed.promoPopupTitle = DEFAULT_SETTINGS.promoPopupTitle;
+        parsed.promoPopupPkg1Name = DEFAULT_SETTINGS.promoPopupPkg1Name;
+        parsed.promoPopupPkg1Price = DEFAULT_SETTINGS.promoPopupPkg1Price;
+        parsed.promoPopupPkg1OrigPrice = DEFAULT_SETTINGS.promoPopupPkg1OrigPrice;
+        parsed.promoPopupPkg1Desc = DEFAULT_SETTINGS.promoPopupPkg1Desc;
+        parsed.promoPopupPkg2Name = DEFAULT_SETTINGS.promoPopupPkg2Name;
+        parsed.promoPopupPkg2Price = DEFAULT_SETTINGS.promoPopupPkg2Price;
+        parsed.promoPopupPkg2OrigPrice = DEFAULT_SETTINGS.promoPopupPkg2OrigPrice;
+        parsed.promoPopupPkg2Desc = DEFAULT_SETTINGS.promoPopupPkg2Desc;
         needsUpdate = true;
       }
       if (needsUpdate) {
