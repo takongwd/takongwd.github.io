@@ -9,6 +9,26 @@ export const Pricing: React.FC = () => {
   const t = translations[language];
 
   const [activeCategory, setActiveCategory] = useState<'main' | 'addon'>('main');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Reset index when changing category
+  React.useEffect(() => {
+    setActiveIndex(0);
+    if (containerRef.current) {
+      containerRef.current.scrollLeft = 0;
+    }
+  }, [activeCategory]);
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const scrollLeft = container.scrollLeft;
+    const cardWidth = container.querySelector('.snap-center')?.getBoundingClientRect().width || 300;
+    const gap = 24; // gap-6
+    const index = Math.round(scrollLeft / (cardWidth + gap));
+    setActiveIndex(index);
+  };
 
   const getOriginalPrice = (priceStr: string): string => {
     const digits = priceStr.replace(/[^0-9]/g, '');
@@ -28,6 +48,7 @@ export const Pricing: React.FC = () => {
 
   const mainPackages = pricingPackages.filter(pkg => (pkg.category || 'main') === 'main');
   const addonPackages = pricingPackages.filter(pkg => pkg.category === 'addon');
+  const currentPackages = activeCategory === 'main' ? mainPackages : addonPackages;
 
   return (
     <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-[#0d0d0f] to-[#050505] border-t border-dark-border">
@@ -102,8 +123,12 @@ export const Pricing: React.FC = () => {
         )}
 
         {/* Packages Cards Grid / Slider */}
-        <div className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none gap-6 md:gap-8 items-stretch justify-start md:justify-center pb-8 md:pb-0 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid-cols-2 lg:grid-cols-3">
-          {(activeCategory === 'main' ? mainPackages : addonPackages).map((pkg) => (
+        <div 
+          ref={containerRef}
+          onScroll={handleScroll}
+          className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none gap-6 md:gap-8 items-stretch justify-start md:justify-center pb-8 md:pb-0 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {currentPackages.map((pkg) => (
             <div
               key={pkg.id}
               className={`relative flex flex-col justify-between p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto shrink-0 md:shrink snap-center ${
@@ -170,6 +195,32 @@ export const Pricing: React.FC = () => {
                 {t.pricingCta}
               </Link>
             </div>
+          ))}
+        </div>
+
+        {/* Mobile Pagination Indicator Dots */}
+        <div className="flex md:hidden justify-center items-center gap-2 mt-6">
+          {currentPackages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                if (containerRef.current) {
+                  const container = containerRef.current;
+                  const cardWidth = container.querySelector('.snap-center')?.getBoundingClientRect().width || 300;
+                  const gap = 24; // gap-6
+                  container.scrollTo({
+                    left: idx * (cardWidth + gap),
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === activeIndex
+                  ? 'w-4 bg-gold shadow-sm shadow-gold/30'
+                  : 'w-1.5 bg-white/20 hover:bg-white/40'
+              }`}
+              aria-label={`Go to package ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
