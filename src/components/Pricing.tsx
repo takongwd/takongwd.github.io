@@ -122,6 +122,12 @@ export const Pricing: React.FC = () => {
           </div>
         )}
 
+        {/* Mobile Swipe Hint */}
+        <div className="flex md:hidden items-center justify-center gap-1.5 text-[10px] text-gold/75 tracking-wider mb-4 animate-pulse">
+          <span>{language === 'lo' ? 'ເລື່ອນຊ້າຍ-ຂວາ ເພື່ອເບິ່ງແພັກເກດທັງໝົດ' : 'Swipe left/right to view all packages'}</span>
+          <span className="text-xs">➔</span>
+        </div>
+
         {/* Packages Cards Grid / Slider */}
         <div 
           ref={containerRef}
@@ -131,7 +137,7 @@ export const Pricing: React.FC = () => {
           {currentPackages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`relative flex flex-col justify-between p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto shrink-0 md:shrink snap-center ${
+              className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto shrink-0 md:shrink snap-center ${
                 pkg.isPopular
                   ? 'border-gold/45 shadow-lg shadow-gold/5 scale-102 lg:scale-105 z-10 bg-gradient-to-b from-[#161619]/90 to-[#0d0d0f]/90'
                   : 'border-dark-border'
@@ -151,11 +157,11 @@ export const Pricing: React.FC = () => {
                   {pkg.name}
                 </h3>
                 {/* Description */}
-                <p className="text-[11px] text-dark-text-muted font-light min-h-[34px] leading-relaxed mb-6">
+                <p className="text-[11px] text-dark-text-muted font-light min-h-[34px] leading-normal mb-4">
                   {pkg.description}
                 </p>
                 {/* Price */}
-                <div className="mb-8 flex flex-col justify-end">
+                <div className="mb-5 flex flex-col justify-end">
                   {getOriginalPrice(pkg.price) && (
                     <span className="text-xs sm:text-sm text-white/30 line-through font-serif tracking-wide mb-1 font-light">
                       {getOriginalPrice(pkg.price)}
@@ -172,10 +178,10 @@ export const Pricing: React.FC = () => {
                 </div>
 
                 {/* Features List */}
-                <div className="w-full h-[1px] bg-dark-border mb-6" />
-                <ul className="space-y-4 mb-8">
+                <div className="w-full h-[1px] bg-dark-border mb-4" />
+                <ul className="space-y-2.5 mb-6">
                   {pkg.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-xs text-white/80 font-light leading-relaxed">
+                    <li key={idx} className="flex items-start text-xs text-white/80 font-light leading-normal">
                       <Check className="h-4 w-4 text-gold shrink-0 mr-3 mt-0.5" />
                       <span>{feature}</span>
                     </li>
