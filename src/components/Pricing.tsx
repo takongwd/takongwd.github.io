@@ -101,12 +101,12 @@ export const Pricing: React.FC = () => {
           </div>
         )}
 
-        {/* Packages Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch justify-center">
+        {/* Packages Cards Grid / Slider */}
+        <div className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none gap-6 md:gap-8 items-stretch justify-start md:justify-center pb-8 md:pb-0 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid-cols-2 lg:grid-cols-3">
           {(activeCategory === 'main' ? mainPackages : addonPackages).map((pkg) => (
             <div
               key={pkg.id}
-              className={`relative flex flex-col justify-between p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 ${
+              className={`relative flex flex-col justify-between p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto shrink-0 md:shrink snap-center ${
                 pkg.isPopular
                   ? 'border-gold/45 shadow-lg shadow-gold/5 scale-102 lg:scale-105 z-10 bg-gradient-to-b from-[#161619]/90 to-[#0d0d0f]/90'
                   : 'border-dark-border'

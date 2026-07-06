@@ -13,6 +13,7 @@ export interface TranslationDict {
   heroTitle2: string;
   heroDescription: string;
   heroCtaAvailability: string;
+  heroCtaPackages: string;
   heroCtaPortfolio: string;
   heroScroll: string;
 
@@ -82,6 +83,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     heroTitle2: 'Moments in Laos',
     heroDescription: 'Crafting modern cinematic memories and luxury portraits. Every frame a masterpiece, preserving your heritage and love story forever.',
     heroCtaAvailability: 'Check Availability',
+    heroCtaPackages: 'Packages & Prices',
     heroCtaPortfolio: 'Explore Albums',
     heroScroll: 'Scroll',
 
@@ -144,6 +146,7 @@ export const translations: Record<'en' | 'lo', TranslationDict> = {
     heroTitle2: 'ອັນງົດງາມ',
     heroDescription: 'ໃຫ້ພວກເຮົາເປັນສ່ວນໜຶ່ງ ໃນການບັນທຶກວັນສໍາຄັນຄວາມຮັກຂອງທ່ານ. ບໍ່ວ່າຈະເປັນພິທີລາວອັນສັກສິດ ຫຼື ງານສະຫຼອງທີ່ອົບອຸ່ນ, ທຸກໂມເມັນຈະຖືກບັນທຶກໄວ້ຢ່າງສົມບູນແບບ.',
     heroCtaAvailability: 'ກວດເບິ່ງວັນຫວ່າງ',
+    heroCtaPackages: 'ເບິ່ງແພັກເກດ & ລາຄາ',
     heroCtaPortfolio: 'ສຳຫຼວດອັນລະບັ້ມ',
     heroScroll: 'ເລື່ອນລົງ',
 

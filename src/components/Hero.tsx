@@ -33,16 +33,22 @@ export const Hero: React.FC = () => {
           {t.heroDescription}
         </p>
         
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 max-w-sm sm:max-w-none mx-auto w-full px-4 sm:px-0">
           <Link
             to="/booking"
-            className="px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] bg-gold-gradient text-black hover:scale-105 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 rounded"
+            className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 text-xs font-semibold uppercase tracking-[0.2em] bg-gold-gradient text-black hover:scale-105 hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 rounded text-center"
           >
             {t.heroCtaAvailability}
           </Link>
           <a
+            href="#pricing"
+            className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 text-xs font-semibold uppercase tracking-[0.2em] border border-white/20 hover:border-gold hover:text-gold hover:bg-gold/5 transition-all duration-300 rounded text-center"
+          >
+            {t.heroCtaPackages}
+          </a>
+          <a
             href="#portfolio"
-            className="px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] border border-white/20 hover:border-gold hover:text-gold hover:bg-gold/5 transition-all duration-300 rounded"
+            className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 text-xs font-semibold uppercase tracking-[0.2em] border border-white/20 hover:border-gold hover:text-gold hover:bg-gold/5 transition-all duration-300 rounded text-center"
           >
             {t.heroCtaPortfolio}
           </a>
