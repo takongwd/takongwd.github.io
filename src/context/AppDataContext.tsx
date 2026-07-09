@@ -846,6 +846,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (settingsRes.error) throw settingsRes.error;
 
       // 1. Process Albums
+      const hasAlbumsInDb = !!(albumsRes.data && albumsRes.data.length > 0);
       let loadedAlbums = albumsRes.data ? albumsRes.data.map(mapAlbumFromDb) : [];
       if (loadedAlbums.length === 0) {
         console.log('Seeding default albums to Supabase...');
@@ -865,7 +866,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // 2. Process Photos
       let loadedPhotos = photosRes.data ? photosRes.data.map(mapPhotoFromDb) : [];
-      if (loadedPhotos.length === 0) {
+      if (loadedPhotos.length === 0 && !hasAlbumsInDb) {
         console.log('Seeding default photos to Supabase...');
         const seedPhotos = DEFAULT_PHOTOS.map(p => ({
           id: p.id,
@@ -1433,6 +1434,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         
         setIsAdminAuthenticated(true);
         localStorage.setItem('wedding_admin_auth', 'true');
+        await loadSupabaseData(true);
         return true;
       } catch (err) {
         console.error('Supabase Auth exception:', err);
@@ -1459,6 +1461,9 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     setIsAdminAuthenticated(false);
     localStorage.removeItem('wedding_admin_auth');
+    if (isSupabaseMode) {
+      await loadSupabaseData(false);
+    }
   };
 
   return (
