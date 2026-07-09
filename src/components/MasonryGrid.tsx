@@ -4,7 +4,7 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { translations } from '../utils/translations';
 
 export const MasonryGrid: React.FC = () => {
-  const { albums, photos, language } = useAppData();
+  const { albums, photos, language, isLoading } = useAppData();
   const t = translations[language];
   
   const [selectedAlbumId, setSelectedAlbumId] = useState<string>('all');
@@ -135,7 +135,28 @@ export const MasonryGrid: React.FC = () => {
         )}
 
         {/* Photos Grid - Left-to-right Grid Layout */}
-        {filteredPhotos.length > 0 ? (
+        {isLoading && filteredPhotos.length === 0 ? (
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
+            {Array.from({ length: 12 }).map((_, idx) => {
+              const heights = [
+                'h-[200px] sm:h-[300px]',
+                'h-[260px] sm:h-[360px]',
+                'h-[220px] sm:h-[320px]',
+                'h-[280px] sm:h-[380px]'
+              ];
+              const heightClass = heights[idx % heights.length];
+              return (
+                <div 
+                  key={idx} 
+                  className={`rounded overflow-hidden bg-white/5 animate-pulse border border-white/5 flex flex-col justify-end p-4 ${heightClass}`}
+                >
+                  <div className="h-3 bg-white/10 rounded w-2/3 mb-2" />
+                  <div className="h-2.5 bg-white/5 rounded w-1/2" />
+                </div>
+              );
+            })}
+          </div>
+        ) : filteredPhotos.length > 0 ? (
           <>
             <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 items-start">
               {filteredPhotos.map((photo, index) => (

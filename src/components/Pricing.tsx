@@ -5,7 +5,7 @@ import { Check, Flame, Percent } from 'lucide-react';
 import { translations } from '../utils/translations';
 
 export const Pricing: React.FC = () => {
-  const { pricingPackages, settings, language } = useAppData();
+  const { pricingPackages, settings, language, isLoading } = useAppData();
   const t = translations[language];
 
   const [activeCategory, setActiveCategory] = useState<'main' | 'addon'>('main');
@@ -134,7 +134,28 @@ export const Pricing: React.FC = () => {
           onScroll={handleScroll}
           className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none gap-6 md:gap-8 items-stretch justify-start md:justify-center pt-6 md:pt-0 pb-8 md:pb-0 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid-cols-2 lg:grid-cols-3"
         >
-          {currentPackages.map((pkg) => (
+          {isLoading && currentPackages.length === 0 ? (
+            Array.from({ length: 3 }).map((_, idx) => (
+              <div 
+                key={idx} 
+                className="relative flex flex-col justify-between p-6 sm:p-8 rounded-lg glass-effect border border-white/5 bg-white/5 animate-pulse w-[85vw] sm:w-[380px] md:w-auto min-h-[480px]"
+              >
+                <div>
+                  <div className="h-6 bg-white/10 rounded w-2/3 mb-4" />
+                  <div className="h-4 bg-white/5 rounded w-full mb-2" />
+                  <div className="h-4 bg-white/5 rounded w-5/6 mb-6" />
+                  <div className="h-8 bg-white/10 rounded w-1/2 mb-6" />
+                  <div className="w-full h-[1px] bg-white/10 mb-6" />
+                  <div className="space-y-3">
+                    <div className="h-3 bg-white/5 rounded w-full" />
+                    <div className="h-3 bg-white/5 rounded w-11/12" />
+                    <div className="h-3 bg-white/5 rounded w-4/5" />
+                  </div>
+                </div>
+                <div className="h-10 bg-white/10 rounded w-full mt-8" />
+              </div>
+            ))
+          ) : currentPackages.map((pkg) => (
             <div
               key={pkg.id}
               className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto min-h-[480px] md:min-h-0 shrink-0 md:shrink snap-center ${

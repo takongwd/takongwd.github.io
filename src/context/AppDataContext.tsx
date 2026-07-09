@@ -75,6 +75,7 @@ interface AppDataContextType {
   setLanguage: (lang: 'en' | 'lo') => void;
   visitorCount: number;
   fetchVisitorCount: () => Promise<void>;
+  isLoading: boolean;
   
   // Album Actions
   addAlbum: (title: string, description: string, coverUrl: string) => Promise<Album>;
@@ -740,6 +741,40 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [language, setLanguageState] = useState<'en' | 'lo'>('lo');
   const [visitorCount, setVisitorCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Pre-load data from cache on startup to make loading instant
+  useEffect(() => {
+    try {
+      const cachedAlbums = localStorage.getItem('wedding_albums');
+      const cachedPhotos = localStorage.getItem('wedding_photos');
+      const cachedPackages = localStorage.getItem('wedding_packages');
+      const cachedSettings = localStorage.getItem('wedding_settings');
+
+      let hasCache = false;
+      if (cachedAlbums) {
+        setAlbums(JSON.parse(cachedAlbums));
+        hasCache = true;
+      }
+      if (cachedPhotos) {
+        setPhotos(JSON.parse(cachedPhotos));
+        hasCache = true;
+      }
+      if (cachedPackages) {
+        setPricingPackages(JSON.parse(cachedPackages));
+        hasCache = true;
+      }
+      if (cachedSettings) {
+        setSettings(JSON.parse(cachedSettings));
+        hasCache = true;
+      }
+      if (hasCache) {
+        setIsLoading(false); // If cache is found, disable initial skeletons immediately
+      }
+    } catch (e) {
+      console.error('Error pre-loading cached data:', e);
+    }
+  }, []);
 
   const setLanguage = (lang: 'en' | 'lo') => {
     setLanguageState(lang);
@@ -826,6 +861,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loadedAlbums = DEFAULT_ALBUMS;
       }
       setAlbums(loadedAlbums);
+      localStorage.setItem('wedding_albums', JSON.stringify(loadedAlbums));
 
       // 2. Process Photos
       let loadedPhotos = photosRes.data ? photosRes.data.map(mapPhotoFromDb) : [];
@@ -851,6 +887,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loadedPhotos = DEFAULT_PHOTOS;
       }
       setPhotos(loadedPhotos);
+      localStorage.setItem('wedding_photos', JSON.stringify(loadedPhotos));
 
       // 3. Process Pricing Packages
       let loadedPackages = packagesRes.data ? packagesRes.data.map(mapPackageFromDb) : [];
@@ -871,6 +908,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loadedPackages = DEFAULT_PACKAGES;
       }
       setPricingPackages(loadedPackages);
+      localStorage.setItem('wedding_packages', JSON.stringify(loadedPackages));
 
       // 4. Process Bookings
       const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
@@ -878,7 +916,9 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // 5. Process Settings
       if (settingsRes.data) {
-        setSettings(mapSettingsFromDb(settingsRes.data));
+        const mappedSettings = mapSettingsFromDb(settingsRes.data);
+        setSettings(mappedSettings);
+        localStorage.setItem('wedding_settings', JSON.stringify(mappedSettings));
       } else {
         const seedSettings = {
           id: 1,
@@ -887,6 +927,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const { error: seedSettingsError } = await supabase.from('settings').insert(seedSettings);
         if (seedSettingsError) console.error('Seed settings error:', seedSettingsError);
         setSettings(DEFAULT_SETTINGS);
+        localStorage.setItem('wedding_settings', JSON.stringify(DEFAULT_SETTINGS));
       }
 
       // 6. Process Visitor Count (Safe check if table exists)
@@ -894,9 +935,12 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setVisitorCount(pageViewsRes.count);
       }
 
+      setIsLoading(false);
+
     } catch (err) {
       console.error('Error fetching data from Supabase:', err);
       loadLocalData();
+      setIsLoading(false);
     }
   };
 
@@ -1418,6 +1462,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setLanguage,
         visitorCount,
         fetchVisitorCount,
+        isLoading,
         addAlbum,
         updateAlbum,
         deleteAlbum,
