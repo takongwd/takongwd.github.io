@@ -10,6 +10,7 @@ export const MasonryGrid: React.FC = () => {
   const [selectedAlbumId, setSelectedAlbumId] = useState<string>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(30);
+  const [isAlbumsExpanded, setIsAlbumsExpanded] = useState<boolean>(false);
 
   // Reset pagination on album switch
   const handleSelectAlbum = (id: string) => {
@@ -17,19 +18,14 @@ export const MasonryGrid: React.FC = () => {
     setVisibleCount(30);
   };
 
-  // Stable shuffle for 'All' tab to mix photos from different albums
-  const shuffledAllPhotos = useMemo(() => {
-    const arr = [...photos];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
+  // Sort all photos by createdAt descending (newest first)
+  const latestAllPhotos = useMemo(() => {
+    return [...photos].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [photos]);
 
   // Filter photos based on album selection
   const filteredPhotos = selectedAlbumId === 'all'
-    ? shuffledAllPhotos.slice(0, visibleCount)
+    ? latestAllPhotos.slice(0, visibleCount)
     : [...photos]
         .filter(p => p.albumId === selectedAlbumId)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -74,32 +70,58 @@ export const MasonryGrid: React.FC = () => {
         </div>
 
         {/* Album Selector Tabs (Unified for Mobile & Desktop) */}
-        <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 mb-8 md:mb-10 pb-3 scroll-smooth">
-          <button
-            onClick={() => handleSelectAlbum('all')}
-            className={`px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-xs font-semibold uppercase tracking-wider rounded transition-all duration-300 shrink-0 cursor-pointer ${
-              selectedAlbumId === 'all'
-                ? 'bg-gold text-black shadow-lg shadow-gold/15'
-                : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
+        <div className="relative mb-8 md:mb-10">
+          <div 
+            className={`flex flex-wrap justify-center gap-1.5 md:gap-3 pb-3 transition-all duration-500 ease-in-out ${
+              isAlbumsExpanded ? 'max-h-[1000px]' : 'max-h-[125px] sm:max-h-[135px] md:max-h-[140px] overflow-hidden'
             }`}
           >
-            {t.portfolioAllWork}
-          </button>
-          
-          {albums.map((album) => (
             <button
-              key={album.id}
-              onClick={() => handleSelectAlbum(album.id)}
+              onClick={() => handleSelectAlbum('all')}
               className={`px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-xs font-semibold uppercase tracking-wider rounded transition-all duration-300 shrink-0 cursor-pointer ${
-                selectedAlbumId === album.id
+                selectedAlbumId === 'all'
                   ? 'bg-gold text-black shadow-lg shadow-gold/15'
                   : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
               }`}
             >
-              {album.title}
+              {t.portfolioAllWork}
             </button>
-          ))}
+            
+            {albums.map((album) => (
+              <button
+                key={album.id}
+                onClick={() => handleSelectAlbum(album.id)}
+                className={`px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-xs font-semibold uppercase tracking-wider rounded transition-all duration-300 shrink-0 cursor-pointer ${
+                  selectedAlbumId === album.id
+                    ? 'bg-gold text-black shadow-lg shadow-gold/15'
+                    : 'border border-white/10 hover:border-gold hover:text-gold text-dark-text-muted bg-transparent'
+                }`}
+              >
+                {album.title}
+              </button>
+            ))}
+          </div>
+
+          {/* Fade overlay when collapsed */}
+          {!isAlbumsExpanded && albums.length > 8 && (
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
+          )}
         </div>
+
+        {/* Show More / Show Less Button */}
+        {albums.length > 8 && (
+          <div className="flex justify-center mb-8 -mt-4">
+            <button
+              onClick={() => setIsAlbumsExpanded(!isAlbumsExpanded)}
+              className="px-4 py-2 border border-white/10 hover:border-gold hover:text-gold bg-[#050505]/40 text-[10px] md:text-xs font-semibold uppercase tracking-widest rounded transition-all duration-300 cursor-pointer"
+            >
+              {isAlbumsExpanded 
+                ? (language === 'lo' ? 'ເບິ່ງໜ້ອຍລົງ ▴' : 'Show Less ▴')
+                : (language === 'lo' ? 'ເບິ່ງທັງໝົດ ▾' : 'Show All ▾')
+              }
+            </button>
+          </div>
+        )}
 
         {/* Active Album Description */}
         {activeAlbum && (
@@ -151,7 +173,7 @@ export const MasonryGrid: React.FC = () => {
             </div>
 
             {/* Load More Button */}
-            {selectedAlbumId === 'all' && shuffledAllPhotos.length > visibleCount && (
+            {selectedAlbumId === 'all' && latestAllPhotos.length > visibleCount && (
               <div className="flex justify-center mt-12 animate-fade-in">
                 <button
                   onClick={() => setVisibleCount(prev => prev + 30)}
