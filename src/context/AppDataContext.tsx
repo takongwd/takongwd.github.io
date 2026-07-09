@@ -577,7 +577,7 @@ const DEFAULT_PACKAGES: PricingPackage[] = [
 const DEFAULT_SETTINGS = {
   promotionText: 'Summer Romance Promotion: Book any Gold or Platinum package this month and receive a complimentary 2-hour Pre-Wedding Sunset session in Vang Vieng!',
   qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://takongweddinglaos.com/payment&color=c5a880&bgcolor=0d0d0f',
-  whatsappNumber: '+8562099998888',
+  whatsappNumber: '+8562095188888',
   facebookPageUrl: 'https://www.facebook.com/Takong.photography/',
   bankName: 'Banque Pour Le Commerce Exterieur Lao (BCEL)',
   bankAccountName: 'TAKONG WEDDING PHOTO CO., LTD',
