@@ -9,6 +9,7 @@ import { Camera, MapPin, Mail, Phone } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import { useTransparentLogo } from '../hooks/useTransparentLogo';
 import { translations } from '../utils/translations';
+import { supabase } from '../utils/supabaseClient';
 
 export const Home: React.FC = () => {
   const { settings, language } = useAppData();
@@ -24,6 +25,16 @@ export const Home: React.FC = () => {
       window.history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
+
+    // Record page view once per session
+    const hasVisited = sessionStorage.getItem('takong_visited_session');
+    if (!hasVisited) {
+      supabase.from('page_views').insert([{}]).then(({ error }) => {
+        if (!error) {
+          sessionStorage.setItem('takong_visited_session', 'true');
+        }
+      });
+    }
 
     // Check sessionStorage to show promo only on first tab visit
     const shown = sessionStorage.getItem('takong_promo_shown');

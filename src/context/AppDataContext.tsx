@@ -73,6 +73,8 @@ interface AppDataContextType {
   isSupabaseMode: boolean;
   language: 'en' | 'lo';
   setLanguage: (lang: 'en' | 'lo') => void;
+  visitorCount: number;
+  fetchVisitorCount: () => Promise<void>;
   
   // Album Actions
   addAlbum: (title: string, description: string, coverUrl: string) => Promise<Album>;
@@ -737,6 +739,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [language, setLanguageState] = useState<'en' | 'lo'>('lo');
+  const [visitorCount, setVisitorCount] = useState<number>(0);
 
   const setLanguage = (lang: 'en' | 'lo') => {
     setLanguageState(lang);
@@ -906,9 +909,35 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSettings(DEFAULT_SETTINGS);
       }
 
+      // 6. Fetch Visitor Count
+      try {
+        const { count, error } = await supabase
+          .from('page_views')
+          .select('*', { count: 'exact', head: true });
+        if (!error && count !== null) {
+          setVisitorCount(count);
+        }
+      } catch (e) {
+        console.error('Error fetching visitor count:', e);
+      }
+
     } catch (err) {
       console.error('Error fetching data from Supabase:', err);
       loadLocalData();
+    }
+  };
+
+  const fetchVisitorCount = async () => {
+    if (!isSupabaseMode) return;
+    try {
+      const { count, error } = await supabase
+        .from('page_views')
+        .select('*', { count: 'exact', head: true });
+      if (!error && count !== null) {
+        setVisitorCount(count);
+      }
+    } catch (e) {
+      console.error("Error fetching visitor count:", e);
     }
   };
 
@@ -1414,6 +1443,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isSupabaseMode,
         language,
         setLanguage,
+        visitorCount,
+        fetchVisitorCount,
         addAlbum,
         updateAlbum,
         deleteAlbum,

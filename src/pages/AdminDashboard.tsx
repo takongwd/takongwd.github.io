@@ -27,7 +27,7 @@ export const AdminDashboard: React.FC = () => {
     albums, photos, pricingPackages, settings, bookings, isAdminAuthenticated, adminLogout,
     addAlbum, updateAlbum, deleteAlbum, addPhotos, deletePhoto, reorderPhotos,
     addPackage, updatePackage, deletePackage, reorderPackages, updateSettings,
-    updateBookingStatus, deleteBooking
+    updateBookingStatus, deleteBooking, visitorCount, fetchVisitorCount
   } = useAppData();
   
   const navigate = useNavigate();
@@ -37,6 +37,8 @@ export const AdminDashboard: React.FC = () => {
   useEffect(() => {
     if (!isAdminAuthenticated) {
       navigate('/admin');
+    } else {
+      fetchVisitorCount();
     }
   }, [isAdminAuthenticated, navigate]);
 
@@ -633,7 +635,7 @@ export const AdminDashboard: React.FC = () => {
             {activeTab === 'overview' && (
               <div className="space-y-8 animate-fade-in">
                 {/* Stats Panel */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="p-6 rounded-lg bg-dark-card border border-dark-border flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-dark-text-muted uppercase tracking-widest block font-medium">Active Albums</span>
@@ -661,6 +663,17 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                     <div className="p-3.5 rounded bg-gold/5 border border-gold/10 text-gold">
                       <Clock className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="p-6 rounded-lg bg-dark-card border border-dark-border flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] text-dark-text-muted uppercase tracking-widest block font-medium">Website Visits</span>
+                      <span className="text-3xl font-serif font-semibold text-white mt-1 block">
+                        {visitorCount}
+                      </span>
+                    </div>
+                    <div className="p-3.5 rounded bg-gold/5 border border-gold/10 text-gold">
+                      <User className="h-6 w-6" />
                     </div>
                   </div>
                 </div>
