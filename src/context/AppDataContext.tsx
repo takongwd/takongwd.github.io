@@ -939,7 +939,20 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     } catch (err) {
       console.error('Error fetching data from Supabase:', err);
-      loadLocalData();
+      // Fallback exclusively to cache without default mock unshifts/seeding
+      try {
+        const cachedAlbums = localStorage.getItem('wedding_albums');
+        const cachedPhotos = localStorage.getItem('wedding_photos');
+        const cachedPackages = localStorage.getItem('wedding_packages');
+        const cachedSettings = localStorage.getItem('wedding_settings');
+
+        if (cachedAlbums) setAlbums(JSON.parse(cachedAlbums));
+        if (cachedPhotos) setPhotos(JSON.parse(cachedPhotos));
+        if (cachedPackages) setPricingPackages(JSON.parse(cachedPackages));
+        if (cachedSettings) setSettings(JSON.parse(cachedSettings));
+      } catch (e) {
+        console.error('Error loading fallback cache:', e);
+      }
       setIsLoading(false);
     }
   };
