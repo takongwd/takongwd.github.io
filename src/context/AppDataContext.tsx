@@ -787,17 +787,31 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ? isAuthenticatedAdmin
         : !!(await supabase.auth.getSession()).data.session;
 
-      // 1. Fetch Albums
-      const { data: dbAlbums, error: albumsError } = await supabase
-        .from('albums')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Fetch all tables concurrently in parallel
+      const [
+        albumsRes,
+        photosRes,
+        packagesRes,
+        bookingsRes,
+        settingsRes,
+        pageViewsRes
+      ] = await Promise.all([
+        supabase.from('albums').select('*').order('created_at', { ascending: false }),
+        supabase.from('photos').select('*').order('created_at', { ascending: false }),
+        supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }),
+        supabase.from('bookings').select(loggedIn ? '*' : 'id, booking_date, status').order('booking_date', { ascending: true }),
+        supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
+        supabase.from('page_views').select('*', { count: 'exact', head: true })
+      ]);
 
-      if (albumsError) throw albumsError;
+      if (albumsRes.error) throw albumsRes.error;
+      if (photosRes.error) throw photosRes.error;
+      if (packagesRes.error) throw packagesRes.error;
+      if (bookingsRes.error) throw bookingsRes.error;
+      if (settingsRes.error) throw settingsRes.error;
 
-      let loadedAlbums = dbAlbums ? dbAlbums.map(mapAlbumFromDb) : [];
-
-      // If no albums exist in DB, seed them with default albums
+      // 1. Process Albums
+      let loadedAlbums = albumsRes.data ? albumsRes.data.map(mapAlbumFromDb) : [];
       if (loadedAlbums.length === 0) {
         console.log('Seeding default albums to Supabase...');
         const seedAlbums = DEFAULT_ALBUMS.map(a => ({
@@ -813,17 +827,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       setAlbums(loadedAlbums);
 
-      // 2. Fetch Photos
-      const { data: dbPhotos, error: photosError } = await supabase
-        .from('photos')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (photosError) throw photosError;
-
-      let loadedPhotos = dbPhotos ? dbPhotos.map(mapPhotoFromDb) : [];
-
-      // If no photos exist in DB, seed them with default photos
+      // 2. Process Photos
+      let loadedPhotos = photosRes.data ? photosRes.data.map(mapPhotoFromDb) : [];
       if (loadedPhotos.length === 0) {
         console.log('Seeding default photos to Supabase...');
         const seedPhotos = DEFAULT_PHOTOS.map(p => ({
@@ -847,17 +852,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       setPhotos(loadedPhotos);
 
-      // 3. Fetch Pricing Packages
-      const { data: dbPackages, error: packagesError } = await supabase
-        .from('pricing_packages')
-        .select('*')
-        .order('order_index', { ascending: true });
-
-      if (packagesError) throw packagesError;
-
-      let loadedPackages = dbPackages ? dbPackages.map(mapPackageFromDb) : [];
-
-      // If no packages exist in DB, seed them
+      // 3. Process Pricing Packages
+      let loadedPackages = packagesRes.data ? packagesRes.data.map(mapPackageFromDb) : [];
       if (loadedPackages.length === 0) {
         console.log('Seeding default packages to Supabase...');
         const seedPackages = DEFAULT_PACKAGES.map(p => ({
@@ -876,29 +872,13 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       setPricingPackages(loadedPackages);
 
-      // 4. Fetch Bookings (conditional fields selection based on role)
-      const selectFields = loggedIn ? '*' : 'id, booking_date, status';
-      const { data: dbBookings, error: bookingsError } = await supabase
-        .from('bookings')
-        .select(selectFields)
-        .order('booking_date', { ascending: true });
-
-      if (bookingsError) throw bookingsError;
-
-      const loadedBookings = dbBookings ? dbBookings.map(mapBookingFromDb) : [];
+      // 4. Process Bookings
+      const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
       setBookings(loadedBookings);
 
-      // 5. Fetch Settings
-      const { data: dbSettings, error: settingsError } = await supabase
-        .from('settings')
-        .select('*')
-        .eq('id', 1)
-        .maybeSingle();
-
-      if (settingsError) throw settingsError;
-
-      if (dbSettings) {
-        setSettings(mapSettingsFromDb(dbSettings));
+      // 5. Process Settings
+      if (settingsRes.data) {
+        setSettings(mapSettingsFromDb(settingsRes.data));
       } else {
         const seedSettings = {
           id: 1,
@@ -909,16 +889,9 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSettings(DEFAULT_SETTINGS);
       }
 
-      // 6. Fetch Visitor Count
-      try {
-        const { count, error } = await supabase
-          .from('page_views')
-          .select('*', { count: 'exact', head: true });
-        if (!error && count !== null) {
-          setVisitorCount(count);
-        }
-      } catch (e) {
-        console.error('Error fetching visitor count:', e);
+      // 6. Process Visitor Count (Safe check if table exists)
+      if (!pageViewsRes.error && pageViewsRes.count !== null) {
+        setVisitorCount(pageViewsRes.count);
       }
 
     } catch (err) {
