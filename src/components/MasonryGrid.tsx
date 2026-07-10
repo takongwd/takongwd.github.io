@@ -169,7 +169,7 @@ export const MasonryGrid: React.FC = () => {
                     src={photo.url}
                     alt="Wedding celebration"
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
                   />
                   
                   {/* Transparent protective shield overlay */}

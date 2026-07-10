@@ -12,11 +12,11 @@ import { translations } from '../utils/translations';
 import { supabase } from '../utils/supabaseClient';
 
 export const Home: React.FC = () => {
-  const { settings, language } = useAppData();
+  const { settings, language, isSupabaseMode } = useAppData();
   const t = translations[language];
   
   // Custom transparent logo: color matches our luxury gold (#c5a880)
-  const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
+  const logoUrl = useTransparentLogo('logo_raw.png', 197, 168, 128);
 
   const [showPromo, setShowPromo] = React.useState(false);
 
@@ -28,7 +28,7 @@ export const Home: React.FC = () => {
 
     // Record page view once per session
     const hasVisited = sessionStorage.getItem('takong_visited_session');
-    if (!hasVisited) {
+    if (!hasVisited && isSupabaseMode) {
       supabase.from('page_views').insert([{}]).then(({ error }) => {
         if (!error) {
           sessionStorage.setItem('takong_visited_session', 'true');
