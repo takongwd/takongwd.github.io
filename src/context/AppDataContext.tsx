@@ -748,8 +748,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const cachedAlbums = localStorage.getItem('wedding_albums');
       const cachedPhotos = localStorage.getItem('wedding_photos');
-      const cachedPackages = localStorage.getItem('wedding_packages');
-      const cachedSettings = localStorage.getItem('wedding_settings');
+      const cachedBookings = localStorage.getItem('wedding_bookings');
 
       let hasCache = false;
       if (cachedAlbums) {
@@ -760,14 +759,13 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPhotos(JSON.parse(cachedPhotos));
         hasCache = true;
       }
-      if (cachedPackages) {
-        setPricingPackages(JSON.parse(cachedPackages));
-        hasCache = true;
+      if (cachedBookings) {
+        setBookings(JSON.parse(cachedBookings));
       }
-      if (cachedSettings) {
-        setSettings(JSON.parse(cachedSettings));
-        hasCache = true;
-      }
+
+      setPricingPackages(DEFAULT_PACKAGES);
+      setSettings(DEFAULT_SETTINGS);
+
       if (hasCache) {
         setIsLoading(false); // If cache is found, disable initial skeletons immediately
       }
@@ -876,22 +874,9 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setPhotos(loadedPhotos);
       localStorage.setItem('wedding_photos', JSON.stringify(loadedPhotos));
 
-      // 3. Process Pricing Packages, Settings, and Bookings (from localStorage or constants)
-      const cachedPackages = localStorage.getItem('wedding_packages');
-      if (cachedPackages) {
-        setPricingPackages(JSON.parse(cachedPackages));
-      } else {
-        setPricingPackages(DEFAULT_PACKAGES);
-        localStorage.setItem('wedding_packages', JSON.stringify(DEFAULT_PACKAGES));
-      }
-
-      const cachedSettings = localStorage.getItem('wedding_settings');
-      if (cachedSettings) {
-        setSettings(JSON.parse(cachedSettings));
-      } else {
-        setSettings(DEFAULT_SETTINGS);
-        localStorage.setItem('wedding_settings', JSON.stringify(DEFAULT_SETTINGS));
-      }
+      // 3. Process Pricing Packages, Settings, and Bookings (from constants and localStorage)
+      setPricingPackages(DEFAULT_PACKAGES);
+      setSettings(DEFAULT_SETTINGS);
 
       const cachedBookings = localStorage.getItem('wedding_bookings');
       if (cachedBookings) {
@@ -913,14 +898,12 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const cachedAlbums = localStorage.getItem('wedding_albums');
         const cachedPhotos = localStorage.getItem('wedding_photos');
-        const cachedPackages = localStorage.getItem('wedding_packages');
-        const cachedSettings = localStorage.getItem('wedding_settings');
         const cachedBookings = localStorage.getItem('wedding_bookings');
 
         if (cachedAlbums) setAlbums(JSON.parse(cachedAlbums));
         if (cachedPhotos) setPhotos(JSON.parse(cachedPhotos));
-        if (cachedPackages) setPricingPackages(JSON.parse(cachedPackages));
-        if (cachedSettings) setSettings(JSON.parse(cachedSettings));
+        setPricingPackages(DEFAULT_PACKAGES);
+        setSettings(DEFAULT_SETTINGS);
         if (cachedBookings) setBookings(JSON.parse(cachedBookings));
       } catch (e) {
         console.error('Error loading fallback cache:', e);
