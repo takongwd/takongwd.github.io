@@ -4,13 +4,20 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { translations } from '../utils/translations';
 
 export const MasonryGrid: React.FC = () => {
-  const { albums, photos, language, isLoading } = useAppData();
+  const { albums, photos, settings, language, isLoading } = useAppData();
   const t = translations[language];
   
   const [selectedAlbumId, setSelectedAlbumId] = useState<string>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(30);
   const [isAlbumsExpanded, setIsAlbumsExpanded] = useState<boolean>(false);
+
+  // Set default selected album based on admin settings when loaded
+  React.useEffect(() => {
+    if (settings.featuredAlbumId) {
+      setSelectedAlbumId(settings.featuredAlbumId);
+    }
+  }, [settings.featuredAlbumId]);
 
   // Reset pagination on album switch
   const handleSelectAlbum = (id: string) => {

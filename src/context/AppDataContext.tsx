@@ -54,6 +54,7 @@ interface AppDataContextType {
     bankAccountName: string;
     bankAccountNumber: string;
     heroBackgroundUrl: string;
+    featuredAlbumId?: string;
     telegramNotificationsEnabled?: boolean;
     telegramBotToken?: string;
     telegramChatId?: string;
@@ -584,6 +585,7 @@ const DEFAULT_SETTINGS = {
   bankAccountName: 'TAKONG WEDDING PHOTO CO., LTD',
   bankAccountNumber: '010-12-00-01234567-001',
   heroBackgroundUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000',
+  featuredAlbumId: 'all',
   telegramNotificationsEnabled: true,
   telegramBotToken: '8858034262:AAHS7Bwe2cmuO13AnlImq3epVzA4Xa8pzjg',
   telegramChatId: '2103336105',
@@ -687,6 +689,7 @@ export const mapSettingsFromDb = (row: any) => ({
   bankAccountName: row.bank_account_name || '',
   bankAccountNumber: row.bank_account_number || '',
   heroBackgroundUrl: row.hero_background_url || '',
+  featuredAlbumId: row.featured_album_id || 'all',
   telegramNotificationsEnabled: !!row.telegram_notifications_enabled,
   telegramBotToken: row.telegram_bot_token || '',
   telegramChatId: row.telegram_chat_id || '',
@@ -711,6 +714,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.bankAccountName !== undefined && { bank_account_name: settings.bankAccountName }),
   ...(settings.bankAccountNumber !== undefined && { bank_account_number: settings.bankAccountNumber }),
   ...(settings.heroBackgroundUrl !== undefined && { hero_background_url: settings.heroBackgroundUrl }),
+  ...(settings.featuredAlbumId !== undefined && { featured_album_id: settings.featuredAlbumId }),
   ...(settings.telegramNotificationsEnabled !== undefined && { telegram_notifications_enabled: settings.telegramNotificationsEnabled }),
   ...(settings.telegramBotToken !== undefined && { telegram_bot_token: settings.telegramBotToken }),
   ...(settings.telegramChatId !== undefined && { telegram_chat_id: settings.telegramChatId }),

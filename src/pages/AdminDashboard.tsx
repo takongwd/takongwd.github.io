@@ -153,6 +153,7 @@ export const AdminDashboard: React.FC = () => {
   const [telegramBotToken, setTelegramBotToken] = useState(settings.telegramBotToken || '');
   const [telegramChatId, setTelegramChatId] = useState(settings.telegramChatId || '');
   const [isTestingTelegram, setIsTestingTelegram] = useState(false);
+  const [featuredAlbumId, setFeaturedAlbumId] = useState(settings.featuredAlbumId || 'all');
 
   // Promo Popup Settings
   const [promoPopupEnabled, setPromoPopupEnabled] = useState(settings.promoPopupEnabled ?? true);
@@ -195,6 +196,7 @@ export const AdminDashboard: React.FC = () => {
     setPromoPopupPkg2Price(settings.promoPopupPkg2Price || '');
     setPromoPopupPkg2OrigPrice(settings.promoPopupPkg2OrigPrice || '');
     setPromoPopupPkg2Desc(settings.promoPopupPkg2Desc || '');
+    setFeaturedAlbumId(settings.featuredAlbumId || 'all');
   }, [settings]);
 
   // Auto-scroll to Album Form when opened or editing
@@ -413,7 +415,8 @@ export const AdminDashboard: React.FC = () => {
         promoPopupPkg2Name,
         promoPopupPkg2Price,
         promoPopupPkg2OrigPrice,
-        promoPopupPkg2Desc
+        promoPopupPkg2Desc,
+        featuredAlbumId
       });
       alert('Settings & Payment parameters updated successfully!');
     } catch (err) {
@@ -1226,6 +1229,29 @@ export const AdminDashboard: React.FC = () => {
                             )}
                           </div>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="w-full h-[1px] bg-dark-border my-6" />
+
+                    {/* Featured Default Album */}
+                    <div className="space-y-4">
+                      <h4 className="font-serif text-sm text-gold tracking-wide">Featured Home Page Portfolio Album</h4>
+                      <div className="max-w-md">
+                        <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Default Active Album Tab</label>
+                        <select
+                          value={featuredAlbumId}
+                          onChange={e => setFeaturedAlbumId(e.target.value)}
+                          className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all text-white"
+                        >
+                          <option value="all">Show All Photos (Default)</option>
+                          {albums.map(a => (
+                            <option key={a.id} value={a.id}>{a.title}</option>
+                          ))}
+                        </select>
+                        <p className="text-[10px] text-dark-text-muted mt-1.5 font-light italic">
+                          Select the album that will be displayed first by default when guests open the landing page.
+                        </p>
                       </div>
                     </div>
 
