@@ -750,6 +750,20 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
+      const APP_VERSION = '1.0.5';
+      const storedVersion = localStorage.getItem('app_version');
+      if (storedVersion !== APP_VERSION) {
+        console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
+        localStorage.removeItem('wedding_albums');
+        localStorage.removeItem('wedding_photos');
+        localStorage.removeItem('wedding_packages');
+        localStorage.removeItem('wedding_settings');
+        localStorage.removeItem('wedding_bookings');
+        localStorage.setItem('app_version', APP_VERSION);
+        window.location.reload();
+        return;
+      }
+
       const cachedAlbums = localStorage.getItem('wedding_albums');
       const cachedPhotos = localStorage.getItem('wedding_photos');
       const cachedPackages = localStorage.getItem('wedding_packages');
