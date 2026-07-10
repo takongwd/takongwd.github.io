@@ -748,6 +748,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const cachedAlbums = localStorage.getItem('wedding_albums');
       const cachedPhotos = localStorage.getItem('wedding_photos');
+      const cachedPackages = localStorage.getItem('wedding_packages');
+      const cachedSettings = localStorage.getItem('wedding_settings');
       const cachedBookings = localStorage.getItem('wedding_bookings');
 
       let hasCache = false;
@@ -759,12 +761,24 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPhotos(JSON.parse(cachedPhotos));
         hasCache = true;
       }
+      if (cachedPackages) {
+        setPricingPackages(JSON.parse(cachedPackages));
+        hasCache = true;
+      }
+      if (cachedSettings) {
+        setSettings(JSON.parse(cachedSettings));
+        hasCache = true;
+      }
       if (cachedBookings) {
         setBookings(JSON.parse(cachedBookings));
       }
 
-      setPricingPackages(DEFAULT_PACKAGES);
-      setSettings(DEFAULT_SETTINGS);
+      if (!cachedPackages) {
+        setPricingPackages(DEFAULT_PACKAGES);
+      }
+      if (!cachedSettings) {
+        setSettings(DEFAULT_SETTINGS);
+      }
 
       if (hasCache) {
         setIsLoading(false); // If cache is found, disable initial skeletons immediately
@@ -814,21 +828,34 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [isSupabaseMode]);
 
-  const loadSupabaseData = async (_isAuthenticatedAdmin?: boolean) => {
+  const loadSupabaseData = async (isAuthenticatedAdmin?: boolean) => {
     try {
-      // Fetch only albums, photos, and page views concurrently from Supabase
+      const loggedIn = isAuthenticatedAdmin !== undefined
+        ? isAuthenticatedAdmin
+        : !!(await supabase.auth.getSession()).data.session;
+
+      // Fetch all tables concurrently in parallel
       const [
         albumsRes,
         photosRes,
+        packagesRes,
+        bookingsRes,
+        settingsRes,
         pageViewsRes
       ] = await Promise.all([
         supabase.from('albums').select('*').order('created_at', { ascending: false }),
         supabase.from('photos').select('*').order('created_at', { ascending: false }),
+        supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }),
+        supabase.from('bookings').select(loggedIn ? '*' : 'id, booking_date, status').order('booking_date', { ascending: true }),
+        supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
         supabase.from('page_views').select('*', { count: 'exact', head: true })
       ]);
 
       if (albumsRes.error) throw albumsRes.error;
       if (photosRes.error) throw photosRes.error;
+      if (packagesRes.error) throw packagesRes.error;
+      if (bookingsRes.error) throw bookingsRes.error;
+      if (settingsRes.error) throw settingsRes.error;
 
       // 1. Process Albums
       const hasAlbumsInDb = !!(albumsRes.data && albumsRes.data.length > 0);
@@ -874,18 +901,49 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setPhotos(loadedPhotos);
       localStorage.setItem('wedding_photos', JSON.stringify(loadedPhotos));
 
-      // 3. Process Pricing Packages, Settings, and Bookings (from constants and localStorage)
-      setPricingPackages(DEFAULT_PACKAGES);
-      setSettings(DEFAULT_SETTINGS);
+      // 3. Process Pricing Packages
+      let loadedPackages = packagesRes.data ? packagesRes.data.map(mapPackageFromDb) : [];
+      if (loadedPackages.length === 0) {
+        console.log('Seeding default packages to Supabase...');
+        const seedPackages = DEFAULT_PACKAGES.map(p => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          description: p.description,
+          features: p.features,
+          is_popular: p.isPopular,
+          order_index: p.orderIndex,
+          category: p.category || 'main'
+        }));
+        const { error: seedPkgError } = await supabase.from('pricing_packages').insert(seedPackages);
+        if (seedPkgError) console.error('Seed packages error:', seedPkgError);
+        loadedPackages = DEFAULT_PACKAGES;
+      }
+      setPricingPackages(loadedPackages);
+      localStorage.setItem('wedding_packages', JSON.stringify(loadedPackages));
 
-      const cachedBookings = localStorage.getItem('wedding_bookings');
-      if (cachedBookings) {
-        setBookings(JSON.parse(cachedBookings));
+      // 4. Process Bookings
+      const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
+      setBookings(loadedBookings);
+      localStorage.setItem('wedding_bookings', JSON.stringify(loadedBookings));
+
+      // 5. Process Settings
+      if (settingsRes.data) {
+        const mappedSettings = mapSettingsFromDb(settingsRes.data);
+        setSettings(mappedSettings);
+        localStorage.setItem('wedding_settings', JSON.stringify(mappedSettings));
       } else {
-        setBookings([]);
+        const seedSettings = {
+          id: 1,
+          ...mapSettingsToDb(DEFAULT_SETTINGS)
+        };
+        const { error: seedSettingsError } = await supabase.from('settings').insert(seedSettings);
+        if (seedSettingsError) console.error('Seed settings error:', seedSettingsError);
+        setSettings(DEFAULT_SETTINGS);
+        localStorage.setItem('wedding_settings', JSON.stringify(DEFAULT_SETTINGS));
       }
 
-      // 4. Process Visitor Count (Safe check if table exists)
+      // 6. Process Visitor Count (Safe check if table exists)
       if (!pageViewsRes.error && pageViewsRes.count !== null) {
         setVisitorCount(pageViewsRes.count);
       }
@@ -898,12 +956,14 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const cachedAlbums = localStorage.getItem('wedding_albums');
         const cachedPhotos = localStorage.getItem('wedding_photos');
+        const cachedPackages = localStorage.getItem('wedding_packages');
+        const cachedSettings = localStorage.getItem('wedding_settings');
         const cachedBookings = localStorage.getItem('wedding_bookings');
 
         if (cachedAlbums) setAlbums(JSON.parse(cachedAlbums));
         if (cachedPhotos) setPhotos(JSON.parse(cachedPhotos));
-        setPricingPackages(DEFAULT_PACKAGES);
-        setSettings(DEFAULT_SETTINGS);
+        if (cachedPackages) setPricingPackages(JSON.parse(cachedPackages));
+        if (cachedSettings) setSettings(JSON.parse(cachedSettings));
         if (cachedBookings) setBookings(JSON.parse(cachedBookings));
       } catch (e) {
         console.error('Error loading fallback cache:', e);
@@ -1180,6 +1240,20 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: `pkg-${Date.now()}`
     };
 
+    if (isSupabaseMode) {
+      const { error } = await supabase.from('pricing_packages').insert({
+        id: newPkg.id,
+        name: newPkg.name,
+        price: newPkg.price,
+        description: newPkg.description,
+        features: newPkg.features,
+        is_popular: newPkg.isPopular,
+        order_index: newPkg.orderIndex,
+        category: newPkg.category || 'main'
+      });
+      if (error) throw error;
+    }
+
     const updated = [...pricingPackages, newPkg].sort((a, b) => a.orderIndex - b.orderIndex);
     setPricingPackages(updated);
     saveLocal('wedding_packages', updated);
@@ -1187,6 +1261,14 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updatePackage = async (id: string, pkgData: Partial<PricingPackage>) => {
+    if (isSupabaseMode) {
+      const { error } = await supabase
+        .from('pricing_packages')
+        .update(mapPackageToDb(pkgData))
+        .eq('id', id);
+      if (error) throw error;
+    }
+
     const updated = pricingPackages.map(p => p.id === id ? { ...p, ...pkgData } : p)
       .sort((a, b) => a.orderIndex - b.orderIndex);
     setPricingPackages(updated);
@@ -1195,12 +1277,27 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const deletePackage = async (id: string) => {
+    if (isSupabaseMode) {
+      const { error } = await supabase.from('pricing_packages').delete().eq('id', id);
+      if (error) throw error;
+    }
+
     const updated = pricingPackages.filter(p => p.id !== id);
     setPricingPackages(updated);
     saveLocal('wedding_packages', updated);
   };
 
   const reorderPackages = async (reorderedPkgs: { id: string; orderIndex: number }[]) => {
+    if (isSupabaseMode) {
+      for (const item of reorderedPkgs) {
+        const { error } = await supabase
+          .from('pricing_packages')
+          .update({ order_index: item.orderIndex })
+          .eq('id', item.id);
+        if (error) throw error;
+      }
+    }
+
     setPricingPackages(prev => {
       const updated = prev.map(p => {
         const match = reorderedPkgs.find(item => item.id === p.id);
@@ -1214,6 +1311,14 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Settings CRUD
   const updateSettings = async (data: Partial<AppDataContextType['settings']>) => {
+    if (isSupabaseMode) {
+      const { error } = await supabase
+        .from('settings')
+        .update(mapSettingsToDb(data))
+        .eq('id', 1);
+      if (error) throw error;
+    }
+
     const updated = { ...settings, ...data };
     setSettings(updated);
     saveLocal('wedding_settings', updated);
@@ -1227,6 +1332,21 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       status: 'pending',
       createdAt: new Date().toISOString()
     };
+
+    if (isSupabaseMode) {
+      const { error } = await supabase.from('bookings').insert({
+        id: newBooking.id,
+        client_name: newBooking.clientName,
+        client_phone: newBooking.clientPhone,
+        booking_date: newBooking.bookingDate,
+        package_name: newBooking.packageName,
+        custom_details: newBooking.customDetails,
+        custom_budget: newBooking.customBudget,
+        status: newBooking.status,
+        created_at: newBooking.createdAt
+      });
+      if (error) throw error;
+    }
 
     const updated = [...bookings, newBooking];
     setBookings(updated);
@@ -1287,6 +1407,14 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateBookingStatus = async (id: string, status: Booking['status']) => {
+    if (isSupabaseMode) {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status })
+        .eq('id', id);
+      if (error) throw error;
+    }
+
     const updated = bookings.map(b => b.id === id ? { ...b, status } : b);
     setBookings(updated);
     saveLocal('wedding_bookings', updated);
@@ -1294,6 +1422,11 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const deleteBooking = async (id: string) => {
+    if (isSupabaseMode) {
+      const { error } = await supabase.from('bookings').delete().eq('id', id);
+      if (error) throw error;
+    }
+
     const updated = bookings.filter(b => b.id !== id);
     setBookings(updated);
     saveLocal('wedding_bookings', updated);
