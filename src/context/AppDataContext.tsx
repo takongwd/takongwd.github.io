@@ -756,28 +756,33 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (cachedAlbums) {
         setAlbums(JSON.parse(cachedAlbums));
         hasCache = true;
+      } else {
+        setAlbums(DEFAULT_ALBUMS);
       }
+
       if (cachedPhotos) {
         setPhotos(JSON.parse(cachedPhotos));
         hasCache = true;
+      } else {
+        setPhotos(DEFAULT_PHOTOS);
       }
+
       if (cachedPackages) {
         setPricingPackages(JSON.parse(cachedPackages));
         hasCache = true;
+      } else {
+        setPricingPackages(DEFAULT_PACKAGES);
       }
+
       if (cachedSettings) {
         setSettings(JSON.parse(cachedSettings));
         hasCache = true;
-      }
-      if (cachedBookings) {
-        setBookings(JSON.parse(cachedBookings));
+      } else {
+        setSettings(DEFAULT_SETTINGS);
       }
 
-      if (!cachedPackages) {
-        setPricingPackages(DEFAULT_PACKAGES);
-      }
-      if (!cachedSettings) {
-        setSettings(DEFAULT_SETTINGS);
+      if (cachedBookings) {
+        setBookings(JSON.parse(cachedBookings));
       }
 
       if (hasCache) {
@@ -785,6 +790,10 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     } catch (e) {
       console.error('Error pre-loading cached data:', e);
+      setAlbums(DEFAULT_ALBUMS);
+      setPhotos(DEFAULT_PHOTOS);
+      setPricingPackages(DEFAULT_PACKAGES);
+      setSettings(DEFAULT_SETTINGS);
     }
   }, []);
 
@@ -952,7 +961,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     } catch (err) {
       console.error('Error fetching data from Supabase:', err);
-      // Fallback exclusively to cache without default mock unshifts/seeding
+      // Fallback to cache or defaults if cache is empty
       try {
         const cachedAlbums = localStorage.getItem('wedding_albums');
         const cachedPhotos = localStorage.getItem('wedding_photos');
@@ -960,13 +969,42 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const cachedSettings = localStorage.getItem('wedding_settings');
         const cachedBookings = localStorage.getItem('wedding_bookings');
 
-        if (cachedAlbums) setAlbums(JSON.parse(cachedAlbums));
-        if (cachedPhotos) setPhotos(JSON.parse(cachedPhotos));
-        if (cachedPackages) setPricingPackages(JSON.parse(cachedPackages));
-        if (cachedSettings) setSettings(JSON.parse(cachedSettings));
-        if (cachedBookings) setBookings(JSON.parse(cachedBookings));
+        if (cachedAlbums) {
+          setAlbums(JSON.parse(cachedAlbums));
+        } else {
+          setAlbums(DEFAULT_ALBUMS);
+        }
+
+        if (cachedPhotos) {
+          setPhotos(JSON.parse(cachedPhotos));
+        } else {
+          setPhotos(DEFAULT_PHOTOS);
+        }
+
+        if (cachedPackages) {
+          setPricingPackages(JSON.parse(cachedPackages));
+        } else {
+          setPricingPackages(DEFAULT_PACKAGES);
+        }
+
+        if (cachedSettings) {
+          setSettings(JSON.parse(cachedSettings));
+        } else {
+          setSettings(DEFAULT_SETTINGS);
+        }
+
+        if (cachedBookings) {
+          setBookings(JSON.parse(cachedBookings));
+        } else {
+          setBookings([]);
+        }
       } catch (e) {
         console.error('Error loading fallback cache:', e);
+        setAlbums(DEFAULT_ALBUMS);
+        setPhotos(DEFAULT_PHOTOS);
+        setPricingPackages(DEFAULT_PACKAGES);
+        setSettings(DEFAULT_SETTINGS);
+        setBookings([]);
       }
       setIsLoading(false);
     }
