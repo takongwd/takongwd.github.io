@@ -43,8 +43,14 @@ FOR ALL TO authenticated
 USING ((auth.jwt() ->> 'email') = 'admin@takongwedding.com')
 WITH CHECK ((auth.jwt() ->> 'email') = 'admin@takongwedding.com');
 
+DROP POLICY IF EXISTS "Allow public insert on bookings" ON public.bookings;
+CREATE POLICY "Allow public insert on bookings" ON public.bookings 
+FOR INSERT 
+WITH CHECK (booking_date IS NOT NULL AND client_name IS NOT NULL AND client_phone IS NOT NULL);
+
 -- 6. PAGE VIEWS POLICIES
 DROP POLICY IF EXISTS "Allow public insert on page_views" ON public.page_views;
+DROP POLICY IF EXISTS "Allow public inserts" ON public.page_views;
 DROP POLICY IF EXISTS "Allow public select on page_views" ON public.page_views;
-CREATE POLICY "Allow public insert on page_views" ON public.page_views FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert on page_views" ON public.page_views FOR INSERT WITH CHECK (id IS NOT NULL);
 CREATE POLICY "Allow public select on page_views" ON public.page_views FOR SELECT USING (true);
