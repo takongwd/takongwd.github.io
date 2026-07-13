@@ -15,9 +15,15 @@ export const MasonryGrid: React.FC = () => {
   // Set default selected album based on admin settings when loaded
   React.useEffect(() => {
     if (settings.featuredAlbumId) {
-      setSelectedAlbumId(settings.featuredAlbumId);
+      // Safety check: verify if the featured album actually exists in the albums list
+      const albumExists = settings.featuredAlbumId === 'all' || albums.some(a => a.id === settings.featuredAlbumId);
+      if (albumExists) {
+        setSelectedAlbumId(settings.featuredAlbumId);
+      } else {
+        setSelectedAlbumId('all'); // Fallback to show all photos if featured album is missing/deleted
+      }
     }
-  }, [settings.featuredAlbumId]);
+  }, [settings.featuredAlbumId, albums]);
 
   // Reset pagination on album switch
   const handleSelectAlbum = (id: string) => {

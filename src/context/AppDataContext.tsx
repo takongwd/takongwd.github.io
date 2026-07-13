@@ -623,13 +623,19 @@ const DEFAULT_BOOKINGS: Booking[] = [
 ];
 
 // --- Supabase DB Mapping Helpers ---
-const mapAlbumFromDb = (row: any): Album => ({
-  id: row.id,
-  title: row.title,
-  description: row.description || '',
-  coverUrl: row.cover_url || '',
-  createdAt: row.created_at
-});
+const mapAlbumFromDb = (row: any): Album => {
+  let cover = row.cover_url || '';
+  if (cover.startsWith('/')) {
+    cover = cover.slice(1);
+  }
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description || '',
+    coverUrl: cover,
+    createdAt: row.created_at
+  };
+};
 
 const mapAlbumToDb = (album: Partial<Album>) => ({
   ...(album.id && { id: album.id }),
@@ -638,12 +644,18 @@ const mapAlbumToDb = (album: Partial<Album>) => ({
   ...(album.coverUrl !== undefined && { cover_url: album.coverUrl })
 });
 
-const mapPhotoFromDb = (row: any): Photo => ({
-  id: row.id,
-  albumId: row.album_id,
-  url: row.url,
-  createdAt: row.created_at
-});
+const mapPhotoFromDb = (row: any): Photo => {
+  let url = row.url || '';
+  if (url.startsWith('/')) {
+    url = url.slice(1);
+  }
+  return {
+    id: row.id,
+    albumId: row.album_id,
+    url: url,
+    createdAt: row.created_at
+  };
+};
 
 export const mapPackageFromDb = (row: any): PricingPackage => ({
   id: row.id,
@@ -688,7 +700,7 @@ export const mapSettingsFromDb = (row: any) => ({
   bankName: row.bank_name || '',
   bankAccountName: row.bank_account_name || '',
   bankAccountNumber: row.bank_account_number || '',
-  heroBackgroundUrl: row.hero_background_url || '',
+  heroBackgroundUrl: (row.hero_background_url && row.hero_background_url.startsWith('/')) ? row.hero_background_url.slice(1) : (row.hero_background_url || ''),
   featuredAlbumId: row.featured_album_id || 'all',
   telegramNotificationsEnabled: !!row.telegram_notifications_enabled,
   telegramBotToken: row.telegram_bot_token || '',
@@ -750,7 +762,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.0.5';
+      const APP_VERSION = '1.0.6';
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
