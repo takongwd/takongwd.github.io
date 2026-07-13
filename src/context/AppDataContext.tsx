@@ -1493,7 +1493,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (isSupabaseMode) {
       try {
         const { error } = await supabase.auth.signInWithPassword({
-          email: 'admin@takongwedding.com',
+          email: 'takong.nov25@gmail.com',
           password: password
         });
         
