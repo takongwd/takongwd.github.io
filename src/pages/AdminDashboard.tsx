@@ -488,19 +488,26 @@ export const AdminDashboard: React.FC = () => {
       orderIndex: editingPkgId ? pricingPackages.find(p => p.id === editingPkgId)?.orderIndex || 0 : pricingPackages.length
     };
 
-    if (editingPkgId) {
-      await updatePackage(editingPkgId, pkgData);
-      setEditingPkgId(null);
-    } else {
-      await addPackage(pkgData);
-    }
+    try {
+      if (editingPkgId) {
+        await updatePackage(editingPkgId, pkgData);
+        setEditingPkgId(null);
+        alert('Pricing package updated successfully!');
+      } else {
+        await addPackage(pkgData);
+        alert('Pricing package created successfully!');
+      }
 
-    setPkgName('');
-    setPkgPrice('');
-    setPkgDesc('');
-    setPkgFeatures('');
-    setPkgIsPopular(false);
-    setPkgCategory('main');
+      setPkgName('');
+      setPkgPrice('');
+      setPkgDesc('');
+      setPkgFeatures('');
+      setPkgIsPopular(false);
+      setPkgCategory('main');
+    } catch (err: any) {
+      console.error(err);
+      alert('Failed to save package: ' + (err.message || err));
+    }
   };
 
   const handleEditPackage = (pkg: PricingPackage) => {
