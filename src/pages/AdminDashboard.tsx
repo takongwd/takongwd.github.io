@@ -152,8 +152,10 @@ export const AdminDashboard: React.FC = () => {
   const [telegramNotificationsEnabled, setTelegramNotificationsEnabled] = useState(settings.telegramNotificationsEnabled || false);
   const [telegramBotToken, setTelegramBotToken] = useState(settings.telegramBotToken || '');
   const [telegramChatId, setTelegramChatId] = useState(settings.telegramChatId || '');
-  const [isTestingTelegram, setIsTestingTelegram] = useState(false);
+   const [isTestingTelegram, setIsTestingTelegram] = useState(false);
   const [featuredAlbumId, setFeaturedAlbumId] = useState(settings.featuredAlbumId || 'all');
+  const [selectorAlbumId, setSelectorAlbumId] = useState<string | null>(null);
+  const [selectorPhotoUrl, setSelectorPhotoUrl] = useState<string>('');
 
   // Promo Popup Settings
   const [promoPopupEnabled, setPromoPopupEnabled] = useState(settings.promoPopupEnabled ?? true);
@@ -1210,6 +1212,83 @@ export const AdminDashboard: React.FC = () => {
                               >
                                 Reset to Default
                               </button>
+                            )}
+                          </div>
+
+                          {/* Choose Background from Portfolio Albums */}
+                          <div className="border border-dark-border/40 rounded p-4 bg-[#0a0a0c] mt-4">
+                            <h4 className="text-[9px] uppercase tracking-widest text-gold font-bold mb-3">Or Choose from Portfolio Albums</h4>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-semibold mb-1">1. Select Album</label>
+                                <select
+                                  value={selectorAlbumId || ''}
+                                  onChange={e => {
+                                    setSelectorAlbumId(e.target.value || null);
+                                    setSelectorPhotoUrl('');
+                                  }}
+                                  className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider text-white"
+                                >
+                                  <option value="">-- Choose an Album --</option>
+                                  {albums.map(a => (
+                                    <option key={a.id} value={a.id}>{a.title}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              {selectorAlbumId && (
+                                <div>
+                                  <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-semibold mb-1">2. Select Image</label>
+                                  <select
+                                    value={selectorPhotoUrl}
+                                    onChange={e => {
+                                      setSelectorPhotoUrl(e.target.value);
+                                      if (e.target.value) {
+                                        setHeroBgUrl(e.target.value);
+                                      }
+                                    }}
+                                    className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider text-white"
+                                  >
+                                    <option value="">-- Choose a Photo --</option>
+                                    {photos
+                                      .filter(p => p.albumId === selectorAlbumId)
+                                      .map((p, idx) => (
+                                        <option key={p.id} value={p.url}>Photo {idx + 1} ({p.url.substring(p.url.lastIndexOf('/') + 1)})</option>
+                                      ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Thumbnail Grid for Visual Selection */}
+                            {selectorAlbumId && (
+                              <div>
+                                <label className="block text-[8px] uppercase tracking-widest text-dark-text-muted font-semibold mb-2">Or Click to Select Photo Visually</label>
+                                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                                  {photos
+                                    .filter(p => p.albumId === selectorAlbumId)
+                                    .map((p, idx) => (
+                                      <div
+                                        key={p.id}
+                                        onClick={() => {
+                                          setSelectorPhotoUrl(p.url);
+                                          setHeroBgUrl(p.url);
+                                        }}
+                                        className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all ${
+                                          heroBgUrl === p.url ? 'border-gold scale-95 shadow-md shadow-gold/25' : 'border-transparent hover:border-white/20'
+                                        }`}
+                                      >
+                                        <img
+                                          src={p.url}
+                                          alt={`Photo ${idx + 1}`}
+                                          className="w-full h-full object-cover"
+                                          loading="lazy"
+                                        />
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
