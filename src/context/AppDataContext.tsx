@@ -584,8 +584,8 @@ const DEFAULT_SETTINGS = {
   bankName: 'Banque Pour Le Commerce Exterieur Lao (BCEL)',
   bankAccountName: 'TAKONG WEDDING PHOTO CO., LTD',
   bankAccountNumber: '010-12-00-01234567-001',
-  heroBackgroundUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000',
-  featuredAlbumId: 'all',
+  heroBackgroundUrl: 'albums/pre-wedding-tor-kar-ning/1.jpg',
+  featuredAlbumId: 'album-pre-wedding-tor-kar-ning',
   telegramNotificationsEnabled: true,
   telegramBotToken: '8858034262:AAHS7Bwe2cmuO13AnlImq3epVzA4Xa8pzjg',
   telegramChatId: '2103336105',
@@ -762,7 +762,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.0.6';
+      const APP_VERSION = '1.0.7';
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
@@ -1133,7 +1133,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       // Migration: inject default hero background url if missing
       if (!parsed.heroBackgroundUrl) {
-        parsed.heroBackgroundUrl = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000';
+        parsed.heroBackgroundUrl = 'albums/pre-wedding-tor-kar-ning/1.jpg';
         needsUpdate = true;
       }
       // Migration: inject Telegram settings if missing or empty
