@@ -744,8 +744,8 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
-  const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || '';
-  const supabaseKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
+  const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || 'https://ccqersgpjirdlurulcri.supabase.co';
+  const supabaseKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'sb_publishable_5EYUFJodKqIGaqy3idYJmQ_wSmXsU3f';
   const isSupabaseMode = !!(supabaseUrl && supabaseKey);
 
   // States
@@ -762,7 +762,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.0.7';
+      const APP_VERSION = '1.0.8';
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
