@@ -7,4 +7,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishabl
 const safeUrl = supabaseUrl.startsWith('http') ? supabaseUrl : 'https://placeholder-project.supabase.co';
 const safeKey = supabaseAnonKey || 'placeholder-key';
 
-export const supabase = createClient(safeUrl, safeKey);
+export const supabase = createClient(safeUrl, safeKey, {
+  global: {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  }
+});
