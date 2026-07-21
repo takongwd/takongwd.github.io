@@ -745,7 +745,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.1.6';
+export const CURRENT_APP_VERSION = '1.1.7';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -876,7 +876,13 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
           { event: '*', schema: 'public' },
           (payload) => {
             console.log('⚡ Realtime Database Update received:', payload);
-            loadSupabaseData();
+            if (payload.table === 'settings' && payload.new && Object.keys(payload.new).length > 0) {
+              const freshSettings = mapSettingsFromDb(payload.new);
+              setSettings({ ...freshSettings });
+              localStorage.setItem('wedding_settings', JSON.stringify(freshSettings));
+            } else {
+              loadSupabaseData();
+            }
             showToast('⚡ ລະບົບອັບເດດ Real-Time: ຂໍ້ມູນຫຼ້າສຸດຖືກສະແດງຜົນແລ້ວ!');
           }
         )
