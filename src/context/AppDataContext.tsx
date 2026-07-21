@@ -743,7 +743,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.1.1';
+export const CURRENT_APP_VERSION = '1.1.2';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -848,16 +848,17 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Load Initial Data & Auth Subscription
   useEffect(() => {
     if (isSupabaseMode) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      // 1. Unconditionally fetch fresh Supabase data on mount for all visitors (mobile & desktop)
+      loadSupabaseData();
+
+      // 2. Auth state change listener
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         const loggedIn = !!session;
         setIsAdminAuthenticated(loggedIn);
         localStorage.setItem('wedding_admin_auth', loggedIn ? 'true' : 'false');
-        
-        // Load data on initialization or auth change
-        await loadSupabaseData(loggedIn);
       });
 
-      // 1. Realtime Database listener for instant multi-device live sync
+      // 3. Realtime Database listener for instant multi-device live sync
       const channel = supabase
         .channel('public-db-sync')
         .on(
@@ -870,7 +871,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         )
         .subscribe();
 
-      // 2. Tab focus & visibility listener to auto-refetch fresh data when device unlocks or switches tab
+      // 4. Tab focus & visibility listener to auto-refetch fresh data when device unlocks or switches tab
       const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible') {
           console.log('📱 Tab became active. Refetching latest database state...');
