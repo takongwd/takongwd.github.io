@@ -22,6 +22,14 @@ const toLocalDateTimeString = (dateStr: string) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+const ensureLeadingSlash = (url: string) => {
+  if (!url) return '';
+  if (!url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:')) {
+    return '/' + url;
+  }
+  return url;
+};
+
 export const AdminDashboard: React.FC = () => {
   const { 
     albums, photos, pricingPackages, settings, bookings, isAdminAuthenticated, adminLogout,
@@ -1287,7 +1295,7 @@ export const AdminDashboard: React.FC = () => {
                                         }`}
                                       >
                                         <img
-                                          src={p.url}
+                                          src={ensureLeadingSlash(p.url)}
                                           alt={`Photo ${idx + 1}`}
                                           className="w-full h-full object-cover"
                                           loading="lazy"

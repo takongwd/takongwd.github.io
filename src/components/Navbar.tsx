@@ -20,7 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isAdmin = false, onLogout }) => 
   const t = translations[language];
 
   // Custom transparent logo: color matches our luxury gold (#c5a880)
-  const logoUrl = useTransparentLogo('logo_raw.png', 197, 168, 128);
+  const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
 
   const navLinks = [
     { label: t.navPortfolio, to: '/', hash: '#portfolio' },

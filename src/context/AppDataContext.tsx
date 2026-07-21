@@ -762,7 +762,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.1.0';
+      const APP_VERSION = '1.1.1';
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
