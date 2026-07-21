@@ -743,7 +743,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.1.3';
+export const CURRENT_APP_VERSION = '1.1.4';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -1000,7 +1000,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // 5. Process Settings
       if (settingsRes.data) {
         const mappedSettings = mapSettingsFromDb(settingsRes.data);
-        setSettings(mappedSettings);
+        setSettings({ ...mappedSettings });
         localStorage.setItem('wedding_settings', JSON.stringify(mappedSettings));
       } else {
         const seedSettings = {
