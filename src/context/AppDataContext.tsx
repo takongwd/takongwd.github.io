@@ -745,7 +745,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.1.9';
+export const CURRENT_APP_VERSION = '1.2.0';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -888,11 +888,20 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         )
         .subscribe();
 
-      // 4. Tab focus & visibility listener to auto-refetch fresh data when device unlocks or switches tab
-      const handleVisibilityChange = () => {
+      // 4. Tab focus & visibility listener to auto-refetch fresh settings when device unlocks or switches tab
+      const handleVisibilityChange = async () => {
         if (document.visibilityState === 'visible') {
-          console.log('📱 Tab became active. Refetching latest database state...');
-          loadSupabaseData();
+          console.log('📱 Tab became active. Fetching latest settings from Supabase...');
+          try {
+            const { data, error } = await supabase.from('settings').select('*').eq('id', 1).maybeSingle();
+            if (!error && data) {
+              const fresh = mapSettingsFromDb(data);
+              setSettings({ ...fresh });
+              localStorage.setItem('wedding_settings', JSON.stringify(fresh));
+            }
+          } catch (e) {
+            console.error('Visibility refresh error:', e);
+          }
         }
       };
 
@@ -915,12 +924,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [isSupabaseMode]);
 
-  const loadSupabaseData = async (isAuthenticatedAdmin?: boolean) => {
+  const loadSupabaseData = async (_isAuthenticatedAdmin?: boolean) => {
     try {
-      const loggedIn = isAuthenticatedAdmin !== undefined
-        ? isAuthenticatedAdmin
-        : !!(await supabase.auth.getSession()).data.session;
-
       // Fetch all tables concurrently in parallel
       const [
         albumsRes,
@@ -933,7 +938,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         supabase.from('albums').select('*').order('created_at', { ascending: false }),
         supabase.from('photos').select('*').order('created_at', { ascending: false }),
         supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }),
-        supabase.from('bookings').select(loggedIn ? '*' : 'id, booking_date, status').order('booking_date', { ascending: true }),
+        // Always fetch all booking columns — RLS controls row visibility per role
+        supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }),
         supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
         supabase.from('page_views').select('*', { count: 'exact', head: true })
       ]);
@@ -941,7 +947,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (albumsRes.error) throw albumsRes.error;
       if (photosRes.error) throw photosRes.error;
       if (packagesRes.error) throw packagesRes.error;
-      if (bookingsRes.error) throw bookingsRes.error;
+      // Bookings error is non-fatal (RLS may restrict non-admin) — log and continue
+      if (bookingsRes.error) console.warn('Bookings fetch warning (may be RLS-restricted):', bookingsRes.error.message);
       if (settingsRes.error) throw settingsRes.error;
 
       // 1. Process Albums
@@ -1009,10 +1016,12 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setPricingPackages(loadedPackages);
       localStorage.setItem('wedding_packages', JSON.stringify(loadedPackages));
 
-      // 4. Process Bookings
-      const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
-      setBookings(loadedBookings);
-      localStorage.setItem('wedding_bookings', JSON.stringify(loadedBookings));
+      // 4. Process Bookings (only update state if fetch succeeded)
+      if (!bookingsRes.error) {
+        const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
+        setBookings(loadedBookings);
+        localStorage.setItem('wedding_bookings', JSON.stringify(loadedBookings));
+      }
 
       // 5. Process Settings
       if (settingsRes.data) {
