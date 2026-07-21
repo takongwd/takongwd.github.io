@@ -6,13 +6,18 @@ export const Hero: React.FC = () => {
   const { settings, language } = useAppData();
   const t = translations[language];
 
+  const rawBg = settings.heroBackgroundUrl || '';
+  const heroBg = rawBg 
+    ? (rawBg.startsWith('/') || rawBg.startsWith('http') || rawBg.startsWith('data:') ? rawBg : '/' + rawBg)
+    : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000';
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with elegant dark vignette overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform transition-transform duration-10000 ease-out"
         style={{ 
-          backgroundImage: `url('${settings.heroBackgroundUrl || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000'}')`,
+          backgroundImage: `url('${heroBg}')`,
         }}
       />
       {/* Cinematic dark mask */}

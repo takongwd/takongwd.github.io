@@ -403,6 +403,28 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleSelectHeroBg = async (url: string) => {
+    const cleanUrl = ensureLeadingSlash(url);
+    setHeroBgUrl(cleanUrl);
+    setSelectorPhotoUrl(cleanUrl);
+    try {
+      await updateSettings({ heroBackgroundUrl: cleanUrl });
+      console.log('⚡ Auto-saved hero background cover to Supabase:', cleanUrl);
+    } catch (err) {
+      console.error('Failed to auto-save hero background cover:', err);
+    }
+  };
+
+  const handleSelectFeaturedAlbum = async (albumId: string) => {
+    setFeaturedAlbumId(albumId);
+    try {
+      await updateSettings({ featuredAlbumId: albumId });
+      console.log('⚡ Auto-saved featured album to Supabase:', albumId);
+    } catch (err) {
+      console.error('Failed to auto-save featured album:', err);
+    }
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -1258,9 +1280,8 @@ export const AdminDashboard: React.FC = () => {
                                   <select
                                     value={selectorPhotoUrl}
                                     onChange={e => {
-                                      setSelectorPhotoUrl(e.target.value);
                                       if (e.target.value) {
-                                        setHeroBgUrl(e.target.value);
+                                        handleSelectHeroBg(e.target.value);
                                       }
                                     }}
                                     className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-3 py-2 text-xs tracking-wider text-white"
@@ -1286,12 +1307,9 @@ export const AdminDashboard: React.FC = () => {
                                     .map((p, idx) => (
                                       <div
                                         key={p.id}
-                                        onClick={() => {
-                                          setSelectorPhotoUrl(p.url);
-                                          setHeroBgUrl(p.url);
-                                        }}
+                                        onClick={() => handleSelectHeroBg(p.url)}
                                         className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all ${
-                                          heroBgUrl === p.url ? 'border-gold scale-95 shadow-md shadow-gold/25' : 'border-transparent hover:border-white/20'
+                                          heroBgUrl === p.url || heroBgUrl === ensureLeadingSlash(p.url) ? 'border-gold scale-95 shadow-md shadow-gold/25' : 'border-transparent hover:border-white/20'
                                         }`}
                                       >
                                         <img
@@ -1313,7 +1331,7 @@ export const AdminDashboard: React.FC = () => {
                           <div className="relative w-full aspect-video rounded overflow-hidden border border-dark-border bg-[#050505] flex items-center justify-center">
                             {heroBgUrl ? (
                               <>
-                                <img src={heroBgUrl} alt="Hero Background Preview" className="w-full h-full object-cover" />
+                                <img src={ensureLeadingSlash(heroBgUrl)} alt="Hero Background Preview" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                   <span className="font-serif text-[10px] text-white uppercase tracking-[0.2em]">TAKONG PREVIEW</span>
                                 </div>
@@ -1335,7 +1353,7 @@ export const AdminDashboard: React.FC = () => {
                         <label className="block text-[9px] uppercase tracking-widest text-dark-text-muted font-bold mb-2">Default Active Album Tab</label>
                         <select
                           value={featuredAlbumId}
-                          onChange={e => setFeaturedAlbumId(e.target.value)}
+                          onChange={e => handleSelectFeaturedAlbum(e.target.value)}
                           className="w-full bg-[#050505] border border-dark-border focus:border-gold focus:outline-none rounded px-4 py-2.5 text-xs tracking-wider transition-all text-white"
                         >
                           <option value="all">Show All Photos (Default)</option>
