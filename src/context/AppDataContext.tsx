@@ -78,6 +78,8 @@ interface AppDataContextType {
   fetchVisitorCount: () => Promise<void>;
   isLoading: boolean;
   appVersion: string;
+  showToast: (msg: string) => void;
+  toastMessage: string | null;
   
   // Album Actions
   addAlbum: (title: string, description: string, coverUrl: string) => Promise<Album>;
@@ -743,7 +745,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.1.4';
+export const CURRENT_APP_VERSION = '1.1.5';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -761,6 +763,14 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [language, setLanguageState] = useState<'en' | 'lo'>('lo');
   const [visitorCount, setVisitorCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = React.useCallback((msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4500);
+  }, []);
 
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
@@ -867,6 +877,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
           (payload) => {
             console.log('⚡ Realtime Database Update received:', payload);
             loadSupabaseData();
+            showToast('⚡ ລະບົບອັບເດດ Real-Time: ຂໍ້ມູນຫຼ້າສຸດຖືກສະແດງຜົນແລ້ວ!');
           }
         )
         .subscribe();
@@ -1595,6 +1606,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         fetchVisitorCount,
         isLoading,
         appVersion: CURRENT_APP_VERSION,
+        showToast,
+        toastMessage,
         addAlbum,
         updateAlbum,
         deleteAlbum,
@@ -1614,6 +1627,25 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }}
     >
       {children}
+
+      {/* Floating Real-Time Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-6 right-6 z-[9999] max-w-sm animate-bounce-in">
+          <div className="bg-[#121215]/95 border border-gold/50 text-white px-5 py-3.5 rounded-lg shadow-2xl backdrop-blur-md flex items-center space-x-3 shadow-gold/20">
+            <div className="p-2 bg-gold/10 rounded-full border border-gold/30 text-gold shrink-0">
+              <span className="text-base">✨</span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gold tracking-wide">
+                {toastMessage}
+              </p>
+              <p className="text-[10px] text-dark-text-muted mt-0.5">
+                {language === 'lo' ? 'ລະບົບອັບເດດຂໍ້ມູນ Real-Time ສຳເລັດ' : 'Database synchronized live across all devices'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </AppDataContext.Provider>
   );
 };

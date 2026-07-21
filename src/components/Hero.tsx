@@ -15,7 +15,8 @@ export const Hero: React.FC = () => {
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with elegant dark vignette overlay */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform transition-transform duration-10000 ease-out"
+        key={heroBg}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform transition-all duration-1000 ease-out animate-fade-in"
         style={{ 
           backgroundImage: `url('${heroBg}')`,
         }}
