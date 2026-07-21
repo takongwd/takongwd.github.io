@@ -12,7 +12,7 @@ import { translations } from '../utils/translations';
 import { supabase } from '../utils/supabaseClient';
 
 export const Home: React.FC = () => {
-  const { settings, language, isSupabaseMode } = useAppData();
+  const { settings, language, isSupabaseMode, appVersion } = useAppData();
   const t = translations[language];
   
   // Custom transparent logo: color matches our luxury gold (#c5a880)
@@ -137,7 +137,10 @@ export const Home: React.FC = () => {
         {/* Bottom copyright line */}
         <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-dark-border/40 flex flex-col sm:flex-row items-center justify-between text-[10px] tracking-widest uppercase text-dark-text-muted">
           <span>&copy; {new Date().getFullYear()} Takong Wedding Laos. {t.footerCopyright}</span>
-          <span className="mt-2 sm:mt-0 font-medium">Fine Art Wedding Photography</span>
+          <div className="mt-2 sm:mt-0 flex items-center space-x-3">
+            <span className="font-medium">Fine Art Wedding Photography</span>
+            <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/30 text-gold-light font-mono text-[9px] lowercase tracking-normal">v{appVersion}</span>
+          </div>
         </div>
       </footer>
     </div>

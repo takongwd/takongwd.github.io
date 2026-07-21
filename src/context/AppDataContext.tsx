@@ -77,6 +77,7 @@ interface AppDataContextType {
   visitorCount: number;
   fetchVisitorCount: () => Promise<void>;
   isLoading: boolean;
+  appVersion: string;
   
   // Album Actions
   addAlbum: (title: string, description: string, coverUrl: string) => Promise<Album>;
@@ -742,6 +743,8 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
+export const CURRENT_APP_VERSION = '1.1.1';
+
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
   const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || 'https://ccqersgpjirdlurulcri.supabase.co';
@@ -762,7 +765,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.1.1';
+      const APP_VERSION = CURRENT_APP_VERSION;
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
@@ -1590,6 +1593,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         visitorCount,
         fetchVisitorCount,
         isLoading,
+        appVersion: CURRENT_APP_VERSION,
         addAlbum,
         updateAlbum,
         deleteAlbum,

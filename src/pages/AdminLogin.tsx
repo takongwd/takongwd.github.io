@@ -5,7 +5,7 @@ import { Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 
 export const AdminLogin: React.FC = () => {
-  const { adminLogin, isAdminAuthenticated } = useAppData();
+  const { adminLogin, isAdminAuthenticated, appVersion } = useAppData();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -108,8 +108,9 @@ export const AdminLogin: React.FC = () => {
       </div>
 
       {/* Basic Footer */}
-      <footer className="py-8 text-center text-[10px] tracking-widest text-dark-text-muted border-t border-dark-border/40">
-        &copy; {new Date().getFullYear()} Takong Wedding Laos. Secure Admin Module.
+      <footer className="py-8 text-center text-[10px] tracking-widest text-dark-text-muted border-t border-dark-border/40 flex items-center justify-center space-x-2">
+        <span>&copy; {new Date().getFullYear()} Takong Wedding Laos. Secure Admin Module.</span>
+        <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/30 text-gold-light font-mono text-[9px] lowercase tracking-normal">v{appVersion}</span>
       </footer>
     </div>
   );

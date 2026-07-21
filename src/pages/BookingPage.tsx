@@ -8,7 +8,7 @@ import { useTransparentLogo } from '../hooks/useTransparentLogo';
 import { translations } from '../utils/translations';
 
 export const BookingPage: React.FC = () => {
-  const { settings, language } = useAppData();
+  const { settings, language, appVersion } = useAppData();
   const t = translations[language];
   const logoUrl = useTransparentLogo('/logo_raw.png', 197, 168, 128);
 
@@ -195,7 +195,10 @@ export const BookingPage: React.FC = () => {
         {/* Bottom copyright line */}
         <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-dark-border/40 flex flex-col sm:flex-row items-center justify-between text-[10px] tracking-widest uppercase text-dark-text-muted">
           <span>&copy; {new Date().getFullYear()} Takong Wedding Laos. {t.footerCopyright}</span>
-          <span className="mt-2 sm:mt-0 font-medium">Fine Art Wedding Photography</span>
+          <div className="mt-2 sm:mt-0 flex items-center space-x-3">
+            <span className="font-medium">Fine Art Wedding Photography</span>
+            <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/30 text-gold-light font-mono text-[9px] lowercase tracking-normal">v{appVersion}</span>
+          </div>
         </div>
       </footer>
     </div>

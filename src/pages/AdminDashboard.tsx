@@ -35,7 +35,7 @@ export const AdminDashboard: React.FC = () => {
     albums, photos, pricingPackages, settings, bookings, isAdminAuthenticated, adminLogout,
     addAlbum, updateAlbum, deleteAlbum, addPhotos, deletePhoto, reorderPhotos,
     addPackage, updatePackage, deletePackage, reorderPackages, updateSettings,
-    updateBookingStatus, deleteBooking, visitorCount, fetchVisitorCount
+    updateBookingStatus, deleteBooking, visitorCount, fetchVisitorCount, appVersion
   } = useAppData();
   
   const navigate = useNavigate();
@@ -2024,6 +2024,13 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
           </main>
+
+          {/* Admin Dashboard Footer */}
+          <footer className="py-6 mt-8 border-t border-dark-border/40 text-center text-[10px] tracking-widest text-dark-text-muted flex items-center justify-center space-x-2">
+            <span>Takong Studio Control Panel</span>
+            <span>•</span>
+            <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/30 text-gold-light font-mono text-[9px] lowercase tracking-normal">System v{appVersion}</span>
+          </footer>
         </div>
       </div>
     </div>
