@@ -849,6 +849,13 @@ export const AdminDashboard: React.FC = () => {
                               Remove
                             </button>
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectHeroBg(albumCover)}
+                            className="mt-2 py-2 px-4 bg-gold/10 border border-gold/30 hover:bg-gold-gradient hover:text-black text-gold text-xs font-semibold uppercase tracking-wider rounded transition-all cursor-pointer flex items-center justify-center space-x-2"
+                          >
+                            <span>🌟 ຕັ້ງຮູບນີ້ເປັນໜ້າປົກເວັບໄຊ (Set as Home Hero Cover)</span>
+                          </button>
                         </div>
                       )}
 
@@ -1141,12 +1148,26 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         </div>
 
-                        <div className="flex gap-2.5 pt-4 border-t border-dark-border/40">
+                        <div className="flex gap-2 pt-4 border-t border-dark-border/40 flex-wrap items-center">
                           <button
                             onClick={() => setSelectedAlbumId(album.id)}
-                            className="flex-grow py-2 text-center text-[10px] uppercase font-bold tracking-widest text-gold bg-gold/5 border border-gold/20 hover:border-gold hover:text-black hover:bg-gold-gradient rounded transition-all cursor-pointer"
+                            className="flex-grow py-2 px-3 text-center text-[10px] uppercase font-bold tracking-widest text-gold bg-gold/5 border border-gold/20 hover:border-gold hover:text-black hover:bg-gold-gradient rounded transition-all cursor-pointer"
                           >
                             Manage Photos
+                          </button>
+                          <button
+                            onClick={() => handleSelectHeroBg(album.coverUrl)}
+                            title="Set Cover Photo as Website Hero Background Cover"
+                            className="py-2 px-2.5 text-[9px] uppercase font-bold tracking-wider text-white/90 bg-white/5 border border-white/10 hover:border-gold hover:text-gold rounded transition-all cursor-pointer"
+                          >
+                            🌟 ຕັ້ງເປັນໜ້າປົກ
+                          </button>
+                          <button
+                            onClick={() => handleSelectFeaturedAlbum(album.id)}
+                            title="Set as Default Active Portfolio Tab"
+                            className="py-2 px-2.5 text-[9px] uppercase font-bold tracking-wider text-white/90 bg-white/5 border border-white/10 hover:border-gold hover:text-gold rounded transition-all cursor-pointer"
+                          >
+                            📌 ຕັ້ງເປັນເດັ່ນ
                           </button>
                           <button
                             onClick={() => handleEditAlbum(album)}
