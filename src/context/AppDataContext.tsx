@@ -762,7 +762,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Pre-load data from cache on startup to make loading instant
   useEffect(() => {
     try {
-      const APP_VERSION = '1.0.9';
+      const APP_VERSION = '1.1.0';
       const storedVersion = localStorage.getItem('app_version');
       if (storedVersion !== APP_VERSION) {
         console.log(`New version detected (${APP_VERSION}). Clearing cache and forcing reload...`);
@@ -854,8 +854,35 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         await loadSupabaseData(loggedIn);
       });
 
+      // 1. Realtime Database listener for instant multi-device live sync
+      const channel = supabase
+        .channel('public-db-sync')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public' },
+          (payload) => {
+            console.log('⚡ Realtime Database Update received:', payload);
+            loadSupabaseData();
+          }
+        )
+        .subscribe();
+
+      // 2. Tab focus & visibility listener to auto-refetch fresh data when device unlocks or switches tab
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          console.log('📱 Tab became active. Refetching latest database state...');
+          loadSupabaseData();
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', handleVisibilityChange);
+
       return () => {
         subscription.unsubscribe();
+        supabase.removeChannel(channel);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleVisibilityChange);
       };
     } else {
       loadLocalData();
