@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.3';
+export const CURRENT_APP_VERSION = '1.2.4';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -1330,8 +1330,17 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         url: p.url,
         created_at: p.createdAt
       }));
-      const { error } = await supabase.from('photos').insert(dbPhotos);
-      if (error) throw error;
+      // Mobile base64 images can create huge payloads that exceed Supabase/PostgREST limits.
+      // We chunk the inserts (e.g. 2 at a time) to prevent "Failed to save photos" errors on mobile.
+      const chunkSize = 2;
+      for (let i = 0; i < dbPhotos.length; i += chunkSize) {
+        const chunk = dbPhotos.slice(i, i + chunkSize);
+        const { error } = await supabase.from('photos').insert(chunk);
+        if (error) {
+          console.error('Supabase chunk insert failed:', error);
+          throw error;
+        }
+      }
     }
 
     const updated = [...photos, ...newPhotos];
