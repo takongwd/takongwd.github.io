@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.4';
+export const CURRENT_APP_VERSION = '1.2.5';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -1253,7 +1253,15 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Helper to save to local storage
   const saveLocal = (key: string, data: any) => {
-    localStorage.setItem(key, JSON.stringify(data));
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+      console.warn(`Failed to save ${key} to localStorage (QuotaExceeded?). Ignoring as Supabase is the source of truth.`, e);
+      // Optional: if it's photos and we hit a limit, we can clear it to free space
+      if (key === 'wedding_photos') {
+        localStorage.removeItem('wedding_photos');
+      }
+    }
   };
 
   // Album CRUDS
