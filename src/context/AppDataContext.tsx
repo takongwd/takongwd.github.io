@@ -721,6 +721,8 @@ export const mapSettingsFromDb = (row: any) => ({
 });
 
 export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']>) => ({
+  // Always include updated_at so Supabase Realtime postgres_changes fires on every UPDATE
+  updated_at: new Date().toISOString(),
   ...(settings.promotionText !== undefined && { promotion_text: settings.promotionText }),
   ...(settings.qrCodeUrl !== undefined && { qr_code_url: settings.qrCodeUrl }),
   ...(settings.whatsappNumber !== undefined && { whatsapp_number: settings.whatsappNumber }),
@@ -745,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.0';
+export const CURRENT_APP_VERSION = '1.2.1';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
