@@ -73,7 +73,7 @@ export const MasonryGrid: React.FC = () => {
         
         {/* Header */}
         <div className="text-center mb-8 md:mb-16 animate-fade-in">
-          <span className="hidden sm:block text-xs uppercase tracking-[0.4em] text-gold font-medium mb-3">
+          <span className="block text-xs uppercase tracking-[0.4em] text-gold font-medium mb-3">
             {t.portfolioSubtitle}
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-white tracking-wide">
@@ -149,7 +149,7 @@ export const MasonryGrid: React.FC = () => {
 
         {/* Photos Grid - Left-to-right Grid Layout */}
         {isLoading && filteredPhotos.length === 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
             {Array.from({ length: 12 }).map((_, idx) => {
               const heights = [
                 'h-[200px] sm:h-[300px]',
@@ -171,7 +171,7 @@ export const MasonryGrid: React.FC = () => {
           </div>
         ) : filteredPhotos.length > 0 ? (
           <>
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 items-start">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 items-start">
               {filteredPhotos.map((photo, index) => (
                 <div
                   key={photo.id}

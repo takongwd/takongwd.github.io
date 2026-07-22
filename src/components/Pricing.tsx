@@ -51,7 +51,7 @@ export const Pricing: React.FC = () => {
   const currentPackages = activeCategory === 'main' ? mainPackages : addonPackages;
 
   return (
-    <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-[#0d0d0f] to-[#050505] border-t border-dark-border">
+    <section id="pricing" className="py-14 md:py-24 px-4 bg-gradient-to-b from-[#0d0d0f] to-[#050505] border-t border-dark-border">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
@@ -160,7 +160,7 @@ export const Pricing: React.FC = () => {
               key={pkg.id}
               className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-lg glass-effect glass-effect-hover border transition-all duration-300 w-[85vw] sm:w-[380px] md:w-auto min-h-[480px] md:min-h-0 shrink-0 md:shrink snap-center ${
                 pkg.isPopular
-                  ? 'border-gold/45 shadow-lg shadow-gold/5 scale-102 lg:scale-105 z-10 bg-gradient-to-b from-[#161619]/90 to-[#0d0d0f]/90'
+                  ? 'border-gold/45 shadow-lg shadow-gold/5 md:scale-102 lg:scale-105 z-10 bg-gradient-to-b from-[#161619]/90 to-[#0d0d0f]/90'
                   : 'border-dark-border'
               }`}
             >

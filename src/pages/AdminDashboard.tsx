@@ -607,10 +607,44 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Mobile bottom sticky tab bar (hidden on lg+) */}
+          <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-[#0d0d0f]/95 backdrop-blur-md border-t border-dark-border flex items-stretch">
+            {[
+              { id: 'overview', icon: <Award className="h-5 w-5" />, label: 'Overview' },
+              { id: 'albums', icon: <FolderHeart className="h-5 w-5" />, label: 'Albums' },
+              { id: 'pricing', icon: <Settings className="h-5 w-5" />, label: 'Settings' },
+              { id: 'bookings', icon: <CalendarRange className="h-5 w-5" />, label: 'Bookings' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as typeof activeTab);
+                  if (tab.id === 'albums') setSelectedAlbumId(null);
+                }}
+                className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-1 text-[9px] font-bold uppercase tracking-wider transition-all relative ${
+                  activeTab === tab.id
+                    ? 'text-gold'
+                    : 'text-dark-text-muted'
+                }`}
+              >
+                {activeTab === tab.id && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-gold rounded-b" />
+                )}
+                {tab.icon}
+                <span>{tab.label}</span>
+                {tab.id === 'bookings' && bookings.filter(b => b.status === 'pending').length > 0 && (
+                  <span className="absolute top-1.5 right-[22%] w-4 h-4 text-[8px] bg-gold text-black rounded-full flex items-center justify-center font-bold">
+                    {bookings.filter(b => b.status === 'pending').length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20 lg:pb-0">
           
-          {/* Left Navigation Menu */}
-          <aside className="lg:col-span-3 space-y-2.5">
+          {/* Left Navigation Menu — desktop only */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-2.5">
             <button
               onClick={() => setActiveTab('overview')}
               className={`w-full flex items-center space-x-3.5 px-5 py-4 text-xs font-semibold uppercase tracking-widest rounded-lg transition-all ${
