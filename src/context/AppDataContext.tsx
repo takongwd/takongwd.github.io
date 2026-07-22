@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.5';
+export const CURRENT_APP_VERSION = '1.2.7';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -881,25 +881,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         localStorage.setItem('wedding_admin_auth', loggedIn ? 'true' : 'false');
       });
 
-      // 3. Realtime Database listener for instant multi-device live sync
-      const channel = supabase
-        .channel('public-db-sync')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public' },
-          (payload) => {
-            console.log('⚡ Realtime Database Update received:', payload);
-            if (payload.table === 'settings' && payload.new && Object.keys(payload.new).length > 0) {
-              const freshSettings = mapSettingsFromDb(payload.new);
-              setSettings({ ...freshSettings });
-              localStorage.setItem('wedding_settings', JSON.stringify(freshSettings));
-            } else {
-              loadSupabaseData();
-            }
-            showToast('⚡ ລະບົບອັບເດດ Real-Time: ຂໍ້ມູນຫຼ້າສຸດຖືກສະແດງຜົນແລ້ວ!');
-          }
-        )
-        .subscribe();
+      // 3. Realtime Database listener removed as requested by user
 
       // 4. Tab focus & visibility listener to auto-refetch fresh settings when device unlocks or switches tab
       const handleVisibilityChange = async () => {
@@ -923,7 +905,6 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       return () => {
         subscription.unsubscribe();
-        supabase.removeChannel(channel);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('focus', handleVisibilityChange);
       };
@@ -1061,51 +1042,32 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     } catch (err) {
       console.error('Error fetching data from Supabase:', err);
-      // Fallback to cache or defaults if cache is empty
-      try {
-        const cachedAlbums = localStorage.getItem('wedding_albums');
-        const cachedPhotos = localStorage.getItem('wedding_photos');
-        const cachedPackages = localStorage.getItem('wedding_packages');
-        const cachedSettings = localStorage.getItem('wedding_settings');
-        const cachedBookings = localStorage.getItem('wedding_bookings');
+      // Fallback to cache or defaults ONLY IF we don't already have data in memory
+      // This prevents a temporary rate-limit or network error from erasing the screen
+      setAlbums(prev => {
+        if (prev.length > 0 && prev !== DEFAULT_ALBUMS) return prev;
+        const cached = localStorage.getItem('wedding_albums');
+        return cached ? JSON.parse(cached) : DEFAULT_ALBUMS;
+      });
 
-        if (cachedAlbums) {
-          setAlbums(JSON.parse(cachedAlbums));
-        } else {
-          setAlbums(DEFAULT_ALBUMS);
-        }
+      setPhotos(prev => {
+        if (prev.length > 0 && prev !== DEFAULT_PHOTOS) return prev;
+        const cached = localStorage.getItem('wedding_photos');
+        return cached ? JSON.parse(cached) : DEFAULT_PHOTOS;
+      });
 
-        if (cachedPhotos) {
-          setPhotos(JSON.parse(cachedPhotos));
-        } else {
-          setPhotos(DEFAULT_PHOTOS);
-        }
+      setPricingPackages(prev => {
+        if (prev.length > 0 && prev !== DEFAULT_PACKAGES) return prev;
+        const cached = localStorage.getItem('wedding_packages');
+        return cached ? JSON.parse(cached) : DEFAULT_PACKAGES;
+      });
 
-        if (cachedPackages) {
-          setPricingPackages(JSON.parse(cachedPackages));
-        } else {
-          setPricingPackages(DEFAULT_PACKAGES);
-        }
+      setBookings(prev => {
+        if (prev.length > 0) return prev;
+        const cached = localStorage.getItem('wedding_bookings');
+        return cached ? JSON.parse(cached) : [];
+      });
 
-        if (cachedSettings) {
-          setSettings(JSON.parse(cachedSettings));
-        } else {
-          setSettings(DEFAULT_SETTINGS);
-        }
-
-        if (cachedBookings) {
-          setBookings(JSON.parse(cachedBookings));
-        } else {
-          setBookings([]);
-        }
-      } catch (e) {
-        console.error('Error loading fallback cache:', e);
-        setAlbums(DEFAULT_ALBUMS);
-        setPhotos(DEFAULT_PHOTOS);
-        setPricingPackages(DEFAULT_PACKAGES);
-        setSettings(DEFAULT_SETTINGS);
-        setBookings([]);
-      }
       setIsLoading(false);
     }
   };
