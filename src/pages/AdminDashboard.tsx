@@ -1991,10 +1991,23 @@ export const AdminDashboard: React.FC = () => {
             {/* TAB 4: BOOKINGS MANAGER */}
             {activeTab === 'bookings' && (
               <div className="space-y-6 animate-fade-in">
-                <h3 className="font-serif text-lg text-white font-medium tracking-wider mb-2">
-                  Client Shoot Bookings ({bookings.length})
+                <h3 className="font-serif text-lg text-white font-medium tracking-wider mb-2 flex justify-between items-center">
+                  <span>Client Shoot Bookings ({bookings.length})</span>
+                  <button 
+                    onClick={async () => {
+                      try {
+                        const { supabase } = await import('../utils/supabaseClient');
+                        const res = await supabase.from('bookings').select('*');
+                        alert(JSON.stringify(res, null, 2));
+                      } catch (e) {
+                        alert(String(e));
+                      }
+                    }}
+                    className="text-xs bg-gold/20 text-gold px-3 py-1 rounded"
+                  >
+                    Debug Fetch
+                  </button>
                 </h3>
-
                 <div className="space-y-4">
                   {bookings.map((booking) => (
                     <div key={booking.id} className="p-5 rounded-lg bg-dark-card border border-dark-border space-y-4">

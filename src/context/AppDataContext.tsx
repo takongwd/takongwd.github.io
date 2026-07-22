@@ -927,147 +927,92 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         packagesRes,
         bookingsRes,
         settingsRes,
-        pageViewsRes
-      ] = await Promise.all([
-        supabase.from('albums').select('*').order('created_at', { ascending: false }),
-        supabase.from('photos').select('*').order('created_at', { ascending: false }),
-        supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }),
-        // Always fetch all booking columns — RLS controls row visibility per role
-        supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }),
-        supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
-        supabase.from('page_views').select('*', { count: 'exact', head: true })
-      ]);
-
-      if (albumsRes.error) throw albumsRes.error;
-      if (photosRes.error) throw photosRes.error;
-      if (packagesRes.error) throw packagesRes.error;
-      // Bookings error is non-fatal (RLS may restrict non-admin) — log and continue
-      if (bookingsRes.error) console.warn('Bookings fetch warning (may be RLS-restricted):', bookingsRes.error.message);
-      if (settingsRes.error) throw settingsRes.error;
+      const fetchWithFallback = async (fetcher: () => Promise<any>, fallbackData: any) => {
+        try {
+          const res = await fetcher();
+          if (res.error) throw res.error;
+          return res.data;
+        } catch (e) {
+          console.warn('Fetch warning:', e);
+          return null; // Return null on error so we know to use cache
+        }
+      };
 
       // 1. Process Albums
-      const hasAlbumsInDb = !!(albumsRes.data && albumsRes.data.length > 0);
-      let loadedAlbums = albumsRes.data ? albumsRes.data.map(mapAlbumFromDb) : [];
-      if (loadedAlbums.length === 0) {
-        console.log('Seeding default albums to Supabase...');
-        const seedAlbums = DEFAULT_ALBUMS.map(a => ({
-          id: a.id,
-          title: a.title,
-          description: a.description,
-          cover_url: a.coverUrl,
-          created_at: a.createdAt
-        }));
-        const { error: seedError } = await supabase.from('albums').insert(seedAlbums);
-        if (seedError) console.error('Seed albums error:', seedError);
-        loadedAlbums = DEFAULT_ALBUMS;
+      const albumsData = await fetchWithFallback(() => supabase.from('albums').select('*').order('created_at', { ascending: false }), DEFAULT_ALBUMS);
+      let loadedAlbums = albumsData ? albumsData.map(mapAlbumFromDb) : [];
+      if (albumsData && loadedAlbums.length === 0) {
+         // Seed defaults
+         console.log('Seeding default albums...');
+         await supabase.from('albums').insert(DEFAULT_ALBUMS.map(a => ({ id: a.id, title: a.title, description: a.description, cover_url: a.coverUrl, created_at: a.createdAt })));
+         loadedAlbums = DEFAULT_ALBUMS;
       }
-      setAlbums(loadedAlbums);
-      localStorage.setItem('wedding_albums', JSON.stringify(loadedAlbums));
+      if (albumsData) {
+        setAlbums(loadedAlbums);
+        localStorage.setItem('wedding_albums', JSON.stringify(loadedAlbums));
+      } else {
+        // Error occurred, use cache
+        const cached = localStorage.getItem('wedding_albums');
+        setAlbums(prev => (prev.length > 0 && prev !== DEFAULT_ALBUMS) ? prev : (cached ? JSON.parse(cached) : DEFAULT_ALBUMS));
+      }
 
       // 2. Process Photos
-      let loadedPhotos = photosRes.data ? photosRes.data.map(mapPhotoFromDb) : [];
-      if (loadedPhotos.length === 0 && !hasAlbumsInDb) {
-        console.log('Seeding default photos to Supabase...');
-        const seedPhotos = DEFAULT_PHOTOS.map(p => ({
-          id: p.id,
-          album_id: p.albumId,
-          url: p.url,
-          created_at: p.createdAt
-        }));
-        
-        const chunkSize = 50;
-        for (let i = 0; i < seedPhotos.length; i += chunkSize) {
-          const chunk = seedPhotos.slice(i, i + chunkSize);
-          const { error: seedPhotoError } = await supabase.from('photos').insert(chunk);
-          if (seedPhotoError) {
-            console.error('Seed photos batch error:', seedPhotoError);
-            break;
-          }
-        }
-        loadedPhotos = DEFAULT_PHOTOS;
+      const photosData = await fetchWithFallback(() => supabase.from('photos').select('*').order('created_at', { ascending: false }), DEFAULT_PHOTOS);
+      let loadedPhotos = photosData ? photosData.map(mapPhotoFromDb) : [];
+      if (photosData && loadedPhotos.length === 0 && (!albumsData || albumsData.length === 0)) {
+         console.log('Seeding default photos...');
+         loadedPhotos = DEFAULT_PHOTOS;
+         // Background seed
+         supabase.from('photos').insert(DEFAULT_PHOTOS.map(p => ({ id: p.id, album_id: p.albumId, url: p.url, created_at: p.createdAt }))).then();
       }
-      setPhotos(loadedPhotos);
-      localStorage.setItem('wedding_photos', JSON.stringify(loadedPhotos));
+      if (photosData) {
+        setPhotos(loadedPhotos);
+        localStorage.setItem('wedding_photos', JSON.stringify(loadedPhotos));
+      } else {
+        const cached = localStorage.getItem('wedding_photos');
+        setPhotos(prev => (prev.length > 0 && prev !== DEFAULT_PHOTOS) ? prev : (cached ? JSON.parse(cached) : DEFAULT_PHOTOS));
+      }
 
-      // 3. Process Pricing Packages
-      let loadedPackages = packagesRes.data ? packagesRes.data.map(mapPackageFromDb) : [];
-      if (loadedPackages.length === 0) {
-        console.log('Seeding default packages to Supabase...');
-        const seedPackages = DEFAULT_PACKAGES.map(p => ({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          description: p.description,
-          features: p.features,
-          is_popular: p.isPopular,
-          order_index: p.orderIndex,
-          category: p.category || 'main'
-        }));
-        const { error: seedPkgError } = await supabase.from('pricing_packages').insert(seedPackages);
-        if (seedPkgError) console.error('Seed packages error:', seedPkgError);
+      // 3. Process Packages
+      const packagesData = await fetchWithFallback(() => supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }), DEFAULT_PACKAGES);
+      let loadedPackages = packagesData ? packagesData.map(mapPackageFromDb) : [];
+      if (packagesData && loadedPackages.length === 0) {
         loadedPackages = DEFAULT_PACKAGES;
+        supabase.from('pricing_packages').insert(DEFAULT_PACKAGES.map(p => ({ id: p.id, name: p.name, price: p.price, description: p.description, features: p.features, is_popular: p.isPopular, order_index: p.orderIndex, category: p.category || 'main' }))).then();
       }
-      setPricingPackages(loadedPackages);
-      localStorage.setItem('wedding_packages', JSON.stringify(loadedPackages));
+      if (packagesData) {
+        setPricingPackages(loadedPackages);
+        localStorage.setItem('wedding_packages', JSON.stringify(loadedPackages));
+      } else {
+        const cached = localStorage.getItem('wedding_packages');
+        setPricingPackages(prev => (prev.length > 0 && prev !== DEFAULT_PACKAGES) ? prev : (cached ? JSON.parse(cached) : DEFAULT_PACKAGES));
+      }
 
-      // 4. Process Bookings (only update state if fetch succeeded)
-      if (!bookingsRes.error) {
-        const loadedBookings = bookingsRes.data ? bookingsRes.data.map(mapBookingFromDb) : [];
+      // 4. Process Bookings
+      const bookingsData = await fetchWithFallback(() => supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }), []);
+      if (bookingsData) {
+        const loadedBookings = bookingsData.map(mapBookingFromDb);
         setBookings(loadedBookings);
         localStorage.setItem('wedding_bookings', JSON.stringify(loadedBookings));
+      } else {
+        const cached = localStorage.getItem('wedding_bookings');
+        setBookings(prev => prev.length > 0 ? prev : (cached ? JSON.parse(cached) : []));
       }
 
       // 5. Process Settings
-      if (settingsRes.data) {
-        const mappedSettings = mapSettingsFromDb(settingsRes.data);
+      const settingsData = await fetchWithFallback(() => supabase.from('settings').select('*').eq('id', 1).maybeSingle(), null);
+      if (settingsData) {
+        const mappedSettings = mapSettingsFromDb(settingsData);
         setSettings({ ...mappedSettings });
         localStorage.setItem('wedding_settings', JSON.stringify(mappedSettings));
       } else {
-        const seedSettings = {
-          id: 1,
-          ...mapSettingsToDb(DEFAULT_SETTINGS)
-        };
-        const { error: seedSettingsError } = await supabase.from('settings').insert(seedSettings);
-        if (seedSettingsError) console.error('Seed settings error:', seedSettingsError);
-        setSettings(DEFAULT_SETTINGS);
-        localStorage.setItem('wedding_settings', JSON.stringify(DEFAULT_SETTINGS));
-      }
-
-      // 6. Process Visitor Count (Safe check if table exists)
-      if (!pageViewsRes.error && pageViewsRes.count !== null) {
-        setVisitorCount(pageViewsRes.count);
+        const cached = localStorage.getItem('wedding_settings');
+        setSettings(prev => prev !== DEFAULT_SETTINGS ? prev : (cached ? JSON.parse(cached) : DEFAULT_SETTINGS));
       }
 
       setIsLoading(false);
-
     } catch (err) {
-      console.error('Error fetching data from Supabase:', err);
-      // Fallback to cache or defaults ONLY IF we don't already have data in memory
-      // This prevents a temporary rate-limit or network error from erasing the screen
-      setAlbums(prev => {
-        if (prev.length > 0 && prev !== DEFAULT_ALBUMS) return prev;
-        const cached = localStorage.getItem('wedding_albums');
-        return cached ? JSON.parse(cached) : DEFAULT_ALBUMS;
-      });
-
-      setPhotos(prev => {
-        if (prev.length > 0 && prev !== DEFAULT_PHOTOS) return prev;
-        const cached = localStorage.getItem('wedding_photos');
-        return cached ? JSON.parse(cached) : DEFAULT_PHOTOS;
-      });
-
-      setPricingPackages(prev => {
-        if (prev.length > 0 && prev !== DEFAULT_PACKAGES) return prev;
-        const cached = localStorage.getItem('wedding_packages');
-        return cached ? JSON.parse(cached) : DEFAULT_PACKAGES;
-      });
-
-      setBookings(prev => {
-        if (prev.length > 0) return prev;
-        const cached = localStorage.getItem('wedding_bookings');
-        return cached ? JSON.parse(cached) : [];
-      });
-
+      console.error('Unexpected error in loadSupabaseData:', err);
       setIsLoading(false);
     }
   };
