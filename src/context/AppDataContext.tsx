@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.2';
+export const CURRENT_APP_VERSION = '1.2.3';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -774,7 +774,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }, 4500);
   }, []);
 
-  // Pre-load data from cache on startup to make loading instant
+  // Pre-load albums/photos/packages from localStorage for instant display
+  // Settings are NEVER loaded from cache — always fetched live from Supabase
   useEffect(() => {
     try {
       const APP_VERSION = CURRENT_APP_VERSION;
@@ -794,7 +795,6 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const cachedAlbums = localStorage.getItem('wedding_albums');
       const cachedPhotos = localStorage.getItem('wedding_photos');
       const cachedPackages = localStorage.getItem('wedding_packages');
-      const cachedSettings = localStorage.getItem('wedding_settings');
       const cachedBookings = localStorage.getItem('wedding_bookings');
 
       let hasCache = false;
@@ -819,28 +819,21 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPricingPackages(DEFAULT_PACKAGES);
       }
 
-      if (!isSupabaseMode && cachedSettings) {
-        setSettings(JSON.parse(cachedSettings));
-        hasCache = true;
-      } else if (!isSupabaseMode) {
-        setSettings(DEFAULT_SETTINGS);
-      }
-
       if (cachedBookings) {
         setBookings(JSON.parse(cachedBookings));
       }
 
       if (hasCache) {
-        setIsLoading(false); // If cache is found, disable initial skeletons immediately
+        setIsLoading(false);
       }
     } catch (e) {
       console.error('Error pre-loading cached data:', e);
       setAlbums(DEFAULT_ALBUMS);
       setPhotos(DEFAULT_PHOTOS);
       setPricingPackages(DEFAULT_PACKAGES);
-      setSettings(DEFAULT_SETTINGS);
     }
   }, []);
+
 
   const setLanguage = (lang: 'en' | 'lo') => {
     setLanguageState(lang);
@@ -860,8 +853,26 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Load Initial Data & Auth Subscription
   useEffect(() => {
     if (isSupabaseMode) {
-      // 1. Unconditionally fetch fresh Supabase data on mount for all visitors (mobile & desktop)
+      // 1a. Immediately fetch SETTINGS first (independent, fast, always fresh)
+      // This guarantees hero cover & featured album are always current on every device
+      (async () => {
+        try {
+          const { data, error } = await supabase
+            .from('settings').select('*').eq('id', 1).maybeSingle();
+          if (!error && data) {
+            const fresh = mapSettingsFromDb(data);
+            setSettings({ ...fresh });
+            localStorage.setItem('wedding_settings', JSON.stringify(fresh));
+            console.log('✅ Settings fetched immediately:', fresh.heroBackgroundUrl);
+          }
+        } catch (e) {
+          console.error('Immediate settings fetch error:', e);
+        }
+      })();
+
+      // 1b. Full data load (albums, photos, packages, bookings)
       loadSupabaseData();
+
 
       // 2. Auth state change listener
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
