@@ -920,14 +920,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const loadSupabaseData = async (_isAuthenticatedAdmin?: boolean) => {
     try {
-      // Fetch all tables concurrently in parallel
-      const [
-        albumsRes,
-        photosRes,
-        packagesRes,
-        bookingsRes,
-        settingsRes,
-      const fetchWithFallback = async (fetcher: () => Promise<any>, fallbackData: any) => {
+      const fetchWithFallback = async (fetcher: () => any) => {
         try {
           const res = await fetcher();
           if (res.error) throw res.error;
@@ -939,7 +932,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       };
 
       // 1. Process Albums
-      const albumsData = await fetchWithFallback(() => supabase.from('albums').select('*').order('created_at', { ascending: false }), DEFAULT_ALBUMS);
+      const albumsData = await fetchWithFallback(() => supabase.from('albums').select('*').order('created_at', { ascending: false }));
       let loadedAlbums = albumsData ? albumsData.map(mapAlbumFromDb) : [];
       if (albumsData && loadedAlbums.length === 0) {
          // Seed defaults
@@ -957,7 +950,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // 2. Process Photos
-      const photosData = await fetchWithFallback(() => supabase.from('photos').select('*').order('created_at', { ascending: false }), DEFAULT_PHOTOS);
+      const photosData = await fetchWithFallback(() => supabase.from('photos').select('*').order('created_at', { ascending: false }));
       let loadedPhotos = photosData ? photosData.map(mapPhotoFromDb) : [];
       if (photosData && loadedPhotos.length === 0 && (!albumsData || albumsData.length === 0)) {
          console.log('Seeding default photos...');
@@ -974,7 +967,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // 3. Process Packages
-      const packagesData = await fetchWithFallback(() => supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }), DEFAULT_PACKAGES);
+      const packagesData = await fetchWithFallback(() => supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }));
       let loadedPackages = packagesData ? packagesData.map(mapPackageFromDb) : [];
       if (packagesData && loadedPackages.length === 0) {
         loadedPackages = DEFAULT_PACKAGES;
@@ -989,7 +982,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // 4. Process Bookings
-      const bookingsData = await fetchWithFallback(() => supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }), []);
+      const bookingsData = await fetchWithFallback(() => supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }));
       if (bookingsData) {
         const loadedBookings = bookingsData.map(mapBookingFromDb);
         setBookings(loadedBookings);
@@ -1000,7 +993,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // 5. Process Settings
-      const settingsData = await fetchWithFallback(() => supabase.from('settings').select('*').eq('id', 1).maybeSingle(), null);
+      const settingsData = await fetchWithFallback(() => supabase.from('settings').select('*').eq('id', 1).maybeSingle());
       if (settingsData) {
         const mappedSettings = mapSettingsFromDb(settingsData);
         setSettings({ ...mappedSettings });
