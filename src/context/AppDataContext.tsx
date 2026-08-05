@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.8';
+export const CURRENT_APP_VERSION = '1.2.9';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -1185,7 +1185,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (error) throw error;
     }
 
-    const updated = [...albums, newAlbum];
+    const updated = [newAlbum, ...albums]; // Prepend so new album appears first
     setAlbums(updated);
     saveLocal('wedding_albums', updated);
     return newAlbum;
