@@ -3,7 +3,7 @@ https.get('https://takongwd.github.io/index.html', { headers: { 'User-Agent': 'N
   let data = '';
   res.on('data', chunk => data += chunk);
   res.on('end', () => {
-    const match = data.match(/src="(\/assets\/index-[^"]+\.js)"/);
+    const match = data.match(/src="(\.?\/assets\/index-[^"]+\.js)"/);
     if (match) {
       const jsUrl = 'https://takongwd.github.io' + match[1];
       console.log('Fetching JS chunk:', jsUrl);
