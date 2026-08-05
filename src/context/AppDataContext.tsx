@@ -747,7 +747,7 @@ export const mapSettingsToDb = (settings: Partial<AppDataContextType['settings']
   ...(settings.promoPopupPkg2Desc !== undefined && { promo_popup_pkg2_desc: settings.promoPopupPkg2Desc })
 });
 
-export const CURRENT_APP_VERSION = '1.2.9';
+export const CURRENT_APP_VERSION = '1.3.0';
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check Supabase configurations (Stub for future extension if user fills in variables)
@@ -927,15 +927,25 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
           return res.data;
         } catch (e) {
           console.warn('Fetch warning:', e);
-          return null; // Return null on error so we know to use cache
+          return null;
         }
       };
 
+      // ============================================================
+      // Fire ALL fetches in parallel — bookings no longer wait for
+      // albums / photos / packages to finish first.
+      // ============================================================
+      const [albumsData, photosData, packagesData, bookingsData, settingsData] = await Promise.all([
+        fetchWithFallback(() => supabase.from('albums').select('*').order('created_at', { ascending: false })),
+        fetchWithFallback(() => supabase.from('photos').select('*').order('created_at', { ascending: false })),
+        fetchWithFallback(() => supabase.from('pricing_packages').select('*').order('order_index', { ascending: true })),
+        fetchWithFallback(() => supabase.from('bookings').select('*').order('booking_date', { ascending: true })),
+        fetchWithFallback(() => supabase.from('settings').select('*').eq('id', 1).maybeSingle()),
+      ]);
+
       // 1. Process Albums
-      const albumsData = await fetchWithFallback(() => supabase.from('albums').select('*').order('created_at', { ascending: false }));
       let loadedAlbums = albumsData ? albumsData.map(mapAlbumFromDb) : [];
       if (albumsData && loadedAlbums.length === 0) {
-         // Seed defaults
          console.log('Seeding default albums...');
          await supabase.from('albums').insert(DEFAULT_ALBUMS.map(a => ({ id: a.id, title: a.title, description: a.description, cover_url: a.coverUrl, created_at: a.createdAt })));
          loadedAlbums = DEFAULT_ALBUMS;
@@ -944,18 +954,15 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setAlbums(loadedAlbums);
         localStorage.setItem('wedding_albums', JSON.stringify(loadedAlbums));
       } else {
-        // Error occurred, use cache
         const cached = localStorage.getItem('wedding_albums');
         setAlbums(prev => (prev.length > 0 && prev !== DEFAULT_ALBUMS) ? prev : (cached ? JSON.parse(cached) : DEFAULT_ALBUMS));
       }
 
       // 2. Process Photos
-      const photosData = await fetchWithFallback(() => supabase.from('photos').select('*').order('created_at', { ascending: false }));
       let loadedPhotos = photosData ? photosData.map(mapPhotoFromDb) : [];
       if (photosData && loadedPhotos.length === 0 && (!albumsData || albumsData.length === 0)) {
          console.log('Seeding default photos...');
          loadedPhotos = DEFAULT_PHOTOS;
-         // Background seed
          supabase.from('photos').insert(DEFAULT_PHOTOS.map(p => ({ id: p.id, album_id: p.albumId, url: p.url, created_at: p.createdAt }))).then();
       }
       if (photosData) {
@@ -967,7 +974,6 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // 3. Process Packages
-      const packagesData = await fetchWithFallback(() => supabase.from('pricing_packages').select('*').order('order_index', { ascending: true }));
       let loadedPackages = packagesData ? packagesData.map(mapPackageFromDb) : [];
       if (packagesData && loadedPackages.length === 0) {
         loadedPackages = DEFAULT_PACKAGES;
@@ -981,19 +987,18 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPricingPackages(prev => (prev.length > 0 && prev !== DEFAULT_PACKAGES) ? prev : (cached ? JSON.parse(cached) : DEFAULT_PACKAGES));
       }
 
-      // 4. Process Bookings
-      const bookingsData = await fetchWithFallback(() => supabase.from('bookings').select('id, client_name, client_phone, booking_date, package_name, custom_details, custom_budget, status, created_at').order('booking_date', { ascending: true }));
+      // 4. Process Bookings — now fetched in parallel, arrives same time as others
       if (bookingsData) {
         const loadedBookings = bookingsData.map(mapBookingFromDb);
         setBookings(loadedBookings);
         localStorage.setItem('wedding_bookings', JSON.stringify(loadedBookings));
+        console.log(`✅ Bookings loaded: ${loadedBookings.length}`);
       } else {
         const cached = localStorage.getItem('wedding_bookings');
         setBookings(prev => prev.length > 0 ? prev : (cached ? JSON.parse(cached) : []));
       }
 
       // 5. Process Settings
-      const settingsData = await fetchWithFallback(() => supabase.from('settings').select('*').eq('id', 1).maybeSingle());
       if (settingsData) {
         const mappedSettings = mapSettingsFromDb(settingsData);
         setSettings({ ...mappedSettings });
@@ -1009,6 +1014,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setIsLoading(false);
     }
   };
+
 
   const fetchVisitorCount = async () => {
     if (!isSupabaseMode) return;
