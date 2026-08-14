@@ -149,7 +149,7 @@ export const MasonryGrid: React.FC = () => {
 
         {/* Photos Grid — Masonry Layout (CSS columns) */}
         {isLoading && filteredPhotos.length === 0 ? (
-          <div className="columns-2 sm:columns-3 md:columns-4 gap-1.5 sm:gap-2">
+          <div className="columns-2 sm:columns-3 md:columns-4 gap-0.5 sm:gap-1">
             {Array.from({ length: 12 }).map((_, idx) => {
               const heights = [
                 'h-[200px]', 'h-[280px]', 'h-[240px]', 'h-[320px]',
@@ -159,19 +159,19 @@ export const MasonryGrid: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className={`break-inside-avoid mb-1.5 sm:mb-2 rounded overflow-hidden bg-white/5 animate-pulse border border-white/5 ${heights[idx]}`}
+                  className={`break-inside-avoid mb-0.5 sm:mb-1 rounded overflow-hidden bg-white/5 animate-pulse border border-white/5 ${heights[idx]}`}
                 />
               );
             })}
           </div>
         ) : filteredPhotos.length > 0 ? (
           <>
-            <div className="columns-2 sm:columns-3 md:columns-4 gap-1.5 sm:gap-2">
+            <div className="columns-2 sm:columns-3 md:columns-4 gap-0.5 sm:gap-1">
               {filteredPhotos.map((photo, index) => (
                 <div
                   key={photo.id}
                   onClick={() => openLightbox(index)}
-                  className="break-inside-avoid mb-1.5 sm:mb-2 relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer shadow-lg hover:shadow-black/70 transition-all duration-300 block w-full"
+                  className="break-inside-avoid mb-0.5 sm:mb-1 relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer shadow-lg hover:shadow-black/70 transition-all duration-300 block w-full"
                 >
                   <img
                     src={photo.url}
