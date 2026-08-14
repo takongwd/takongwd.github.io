@@ -147,58 +147,53 @@ export const MasonryGrid: React.FC = () => {
           </div>
         )}
 
-        {/* Photos Grid - Left-to-right Grid Layout */}
+        {/* Photos Grid — Masonry Layout (CSS columns) */}
         {isLoading && filteredPhotos.length === 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
+          <div className="columns-2 sm:columns-3 md:columns-4 gap-3 sm:gap-4">
             {Array.from({ length: 12 }).map((_, idx) => {
               const heights = [
-                'h-[200px] sm:h-[300px]',
-                'h-[260px] sm:h-[360px]',
-                'h-[220px] sm:h-[320px]',
-                'h-[280px] sm:h-[380px]'
+                'h-[200px]', 'h-[280px]', 'h-[240px]', 'h-[320px]',
+                'h-[260px]', 'h-[180px]', 'h-[300px]', 'h-[220px]',
+                'h-[350px]', 'h-[210px]', 'h-[270px]', 'h-[190px]'
               ];
-              const heightClass = heights[idx % heights.length];
               return (
-                <div 
-                  key={idx} 
-                  className={`rounded overflow-hidden bg-white/5 animate-pulse border border-white/5 flex flex-col justify-end p-4 ${heightClass}`}
-                >
-                  <div className="h-3 bg-white/10 rounded w-2/3 mb-2" />
-                  <div className="h-2.5 bg-white/5 rounded w-1/2" />
-                </div>
+                <div
+                  key={idx}
+                  className={`break-inside-avoid mb-3 sm:mb-4 rounded overflow-hidden bg-white/5 animate-pulse border border-white/5 ${heights[idx]}`}
+                />
               );
             })}
           </div>
         ) : filteredPhotos.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 items-start">
+            <div className="columns-2 sm:columns-3 md:columns-4 gap-3 sm:gap-4">
               {filteredPhotos.map((photo, index) => (
                 <div
                   key={photo.id}
                   onClick={() => openLightbox(index)}
-                  className="relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer photo-shimmer shadow-lg hover:shadow-black/70 transition-all duration-300 aspect-square"
+                  className="break-inside-avoid mb-3 sm:mb-4 relative overflow-hidden rounded group border border-white/5 bg-[#121215] cursor-pointer shadow-lg hover:shadow-black/70 transition-all duration-300 block w-full"
                 >
                   <img
                     src={photo.url}
                     alt="Wedding celebration"
                     loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
+                    className="w-full h-auto block group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none select-none protect-image"
                   />
-                  
+
                   {/* Transparent protective shield overlay */}
                   <div className="absolute inset-0 z-10 protect-image" />
-                  
+
                   {/* Overlay hover effect */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-6 z-20 protect-image">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4 z-20 protect-image">
                     <div>
                       <span className="text-[10px] tracking-widest uppercase text-gold/85 font-semibold block">
                         {albums.find(a => a.id === photo.albumId)?.title || 'Wedding Portfolio'}
                       </span>
-                      <h4 className="font-serif text-base text-white font-light mt-1">
+                      <h4 className="font-serif text-sm text-white font-light mt-0.5">
                         {t.portfolioViewCaptures}
                       </h4>
                     </div>
-                    <div className="p-2 rounded bg-black/40 border border-white/10 text-white">
+                    <div className="p-2 rounded bg-black/40 border border-white/10 text-white shrink-0">
                       <Maximize2 className="h-4 w-4" />
                     </div>
                   </div>
